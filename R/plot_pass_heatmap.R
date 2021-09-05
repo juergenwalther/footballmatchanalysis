@@ -7,11 +7,14 @@
 #' @param plot_discrete boolean to plot pass descrete heatmap
 #' @param plot_rawdata boolean to plot pass raw data
 #'
-#' @return no return object. A maximum of 3 plots are generated based
+#' @return no return object. A maximum of 3 plots are generated based on the boolean indicators
+#' in the function arguments
 #' @export
 #'
 #' @examples
-plot_pass_heatmap <- function(df, spielrichtung, plot_heatmap = T, plot_discrete = T, plot_rawdata = T) {
+plot_pass_heatmap <- function(df, spielrichtung, plot_heatmap = T, plot_discrete = T, plot_rawdata = T,
+                              name_heatmap = "paesse_heatmap", name_discrete = "paesse_heatmap_diskret",
+                              name_raw = "paesse_rawdata") {
   if (plot_heatmap) {
     soccermatics:soccerHeatmap(df,
       lengthPitch = 105, widthPitch = 68, xBins = 20,
@@ -21,7 +24,7 @@ plot_pass_heatmap <- function(df, spielrichtung, plot_heatmap = T, plot_discrete
       x = "x", y = "y"
     )
 
-    ggsave(file = paste0(outpath, "paesse_heatmap.png"))
+    ggsave(file = paste0(outpath, name_heatmap, ".png"))
   }
 
   if (plot_discrete) {
@@ -33,7 +36,7 @@ plot_pass_heatmap <- function(df, spielrichtung, plot_heatmap = T, plot_discrete
       x = "x", y = "y"
     )
 
-    ggsave(file = paste0(outpath, "paesse_heatmap_diskret.png"))
+    ggsave(file = paste0(outpath, name_discrete, ".png"))
   }
 
   if (plot_rawdata) {
@@ -51,6 +54,6 @@ plot_pass_heatmap <- function(df, spielrichtung, plot_heatmap = T, plot_discrete
         )
       )
 
-    ggsave(file = paste0(outpath, "paesse_rawdata.png"))
+    ggsave(file = paste0(outpath, name_raw, ".png"))
   }
 }
