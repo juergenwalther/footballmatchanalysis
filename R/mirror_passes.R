@@ -10,8 +10,8 @@
 #' @export
 #'
 #' @examples
-mirror_pitch = function(x,center){
-  return(ifelse(x >= center,x-2*(x-center),x+2*(abs(x-center))))
+mirror_pitch <- function(x, center) {
+  return(ifelse(x >= center, x - 2 * (x - center), x + 2 * (abs(x - center))))
 }
 
 #' Mirror pass sequences
@@ -24,10 +24,12 @@ mirror_pitch = function(x,center){
 #' @export
 #'
 #' @examples
-mirror_passes <- function(pass_norm, spielrichtung_real){
-  if(strcmp(spielrichtung_real,"l")){
-    pass_norm = pass_norm %>%
-      mutate(x = mirror_pitch(x,52.5),
-             y = mirror_pitch(y,34))
+mirror_passes <- function(pass_norm, spielrichtung_real) {
+  if (strcmp(spielrichtung_real, "l")) {
+    pass_norm <- pass_norm %>%
+      mutate(
+        x = mirror_pitch(x, 52.5),
+        y = mirror_pitch(y, 34)
+      )
   }
 }

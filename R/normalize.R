@@ -12,8 +12,8 @@
 #' @export
 #'
 #' @examples
-normalize_x = function(x,num){
-  xnew = x/1136*num
+normalize_x <- function(x, num) {
+  xnew <- x / 1136 * num
   return(xnew)
 }
 
@@ -33,8 +33,8 @@ normalize_x = function(x,num){
 #' @export
 #'
 #' @examples
-normalize_y = function(y,num){
-  ynew = y/782*num
-  ynew = abs(ynew-num)
+normalize_y <- function(y, num) {
+  ynew <- y / 782 * num
+  ynew <- abs(ynew - num)
   return(ynew)
 }
