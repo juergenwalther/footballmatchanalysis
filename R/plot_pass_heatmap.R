@@ -6,17 +6,21 @@
 #' @param plot_heatmap boolean to plot pass heatmap
 #' @param plot_discrete boolean to plot pass descrete heatmap
 #' @param plot_rawdata boolean to plot pass raw data
+#' @param outpath character string. Output path for analysis pictures
+#' @param name_heatmap character string. filename of heatmap plot
+#' @param name_discrete character string. filename of discrete heatmap plot
+#' @param name_raw character string. filename of raw data plot
 #'
 #' @return no return object. A maximum of 3 plots are generated based on the boolean indicators
 #' in the function arguments
 #' @export
 #'
 #' @examples
-plot_pass_heatmap <- function(df, spielrichtung, plot_heatmap = T, plot_discrete = T, plot_rawdata = T,
+plot_pass_heatmap <- function(df, outpath, spielrichtung = "r", plot_heatmap = T, plot_discrete = T, plot_rawdata = T,
                               name_heatmap = "paesse_heatmap", name_discrete = "paesse_heatmap_diskret",
                               name_raw = "paesse_rawdata") {
   if (plot_heatmap) {
-    soccermatics:soccerHeatmap(df,
+    soccerHeatmap(df,
       lengthPitch = 105, widthPitch = 68, xBins = 20,
       yBins = 20, kde = TRUE, arrow = spielrichtung,
       colLow = "white", colHigh = "red", title = "Heatmap der Pässe",
@@ -24,11 +28,11 @@ plot_pass_heatmap <- function(df, spielrichtung, plot_heatmap = T, plot_discrete
       x = "x", y = "y"
     )
 
-    ggsave(file = paste0(outpath, name_heatmap, ".png"))
+    ggsave(file = paste0(outpath, "/", name_heatmap, ".png"))
   }
 
   if (plot_discrete) {
-    soccermatics:soccerHeatmap(df,
+    soccerHeatmap(df,
       lengthPitch = 105, widthPitch = 68, xBins = 8,
       yBins = 8, kde = FALSE, arrow = spielrichtung,
       colLow = "white", colHigh = "red", title = "Heatmap der Pässe",
@@ -36,17 +40,17 @@ plot_pass_heatmap <- function(df, spielrichtung, plot_heatmap = T, plot_discrete
       x = "x", y = "y"
     )
 
-    ggsave(file = paste0(outpath, name_discrete, ".png"))
+    ggsave(file = paste0(outpath, "/", name_discrete, ".png"))
   }
 
   if (plot_rawdata) {
-    soccermatics:soccerPitch(
+    soccerPitch(
       arrow = spielrichtung,
       title = "Passstafetten",
       subtitle = "Alle Passstafetten während des Spiels (farbcodiert nach gespielten Minuten)"
     ) +
       geom_path(
-        data = pass_norm, aes(x = x, y = y, group = Zeit, color = Zeit),
+        data = df, aes(x = x, y = y, group = Zeit, color = Zeit),
         arrow = arrow(
           angle = 30, length = unit(0.05, "inches"),
           ends = arrhead,
@@ -54,6 +58,6 @@ plot_pass_heatmap <- function(df, spielrichtung, plot_heatmap = T, plot_discrete
         )
       )
 
-    ggsave(file = paste0(outpath, name_raw, ".png"))
+    ggsave(file = paste0(outpath, "/", name_raw, ".png"))
   }
 }

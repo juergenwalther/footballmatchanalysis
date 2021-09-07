@@ -8,18 +8,21 @@
 #' @export
 #'
 #' @examples
-normalize_sequences <- function(pass, dim_field = list(x = 105, y = 68)) {
-  df <- df %>% tidyr::drop_na
+normalize_sequences <- function(df, dim_field = list(x = 105, y = 68)) {
+  if (nrow(df) > 0) {
+    df <- tidyr::drop_na(df)
+    df_sel <- df %>%
+      dplyr::select(V2, V3, V4)
 
-  df_sel <- df %>%
-    select(V2, V3, V4)
-
-  colnames(df_sel) <- c("Zeit", "x", "y")
-  df_norm <- df_sel %>%
-    mutate(
-      x = normalize_x(x, dim_field$x),
-      y = normalize_y(y, dim_field$y)
-    )
+    colnames(df_sel) <- c("Zeit", "x", "y")
+    df_norm <- df_sel %>%
+      dplyr::mutate(
+        x = normalize_x(x, dim_field$x),
+        y = normalize_y(y, dim_field$y)
+      )
+  } else {
+    df_norm <- df
+  }
 
   return(df_norm)
 }

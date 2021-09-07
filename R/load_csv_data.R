@@ -10,7 +10,7 @@
 #'
 #' @examples
 load_csv_data <- function(i, filename, spiel, path) {
-  complete_filename <- paste0("C://Users/Juergis/Documents/Fussball/Spielanalyse/Programm/Videoanalyse/WFV/", spiel, "/", filename, "_", i, ".csv")
+  complete_filename <- paste0(path,"/", spiel, "/", filename, "_", i, ".csv")
   if (file.exists(complete_filename)) {
     df <- fread(file = complete_filename)
   } else {

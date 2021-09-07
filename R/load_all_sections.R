@@ -11,6 +11,6 @@
 #'
 #' @examples
 load_all_sections <- function(filename, spiel, path, num_sections = 6) {
-  out_list <- lapply(1:num_sections, footballmatchanalysis:::load_csv_data(filename, spiel, path))
+  out_list <- lapply(1:num_sections, function(i) footballmatchanalysis::load_csv_data(i, filename, spiel, path))
   return(out_list)
 }
