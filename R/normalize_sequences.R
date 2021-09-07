@@ -8,7 +8,7 @@
 #' @export
 #'
 #' @examples
-normalize_sequences <- function(pass, dim_field) {
+normalize_sequences <- function(pass, dim_field = list(x = 105, y = 68)) {
   df <- df %>% tidyr::drop_na
 
   df_sel <- df %>%
