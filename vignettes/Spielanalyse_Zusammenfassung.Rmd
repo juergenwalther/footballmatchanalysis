@@ -25,6 +25,8 @@ library(pracma)
 library(MASS)
 library(ggforce)
 library(cowplot)
+# Save modules
+library(xlsx)
 ```
 
 # Daten laden
@@ -143,4 +145,10 @@ for (i in 1:6) {
 
 plot_shots(df = shots_tot, title = "Schüsse", subtitle = paste0("Position der Schüsse im gesamten Spiel"), outpath = outfolder_shots, filename = paste0("schuesse_total"))
 plot_shots(df = shots_opp_tot, title = "Schüsse des Gegners", subtitle = paste0("Position der Schüsse des Gegners im gesamten Spiel"), outpath = outfolder_shots, filename = paste0("schuesse_gegner_total"))
+```
+```{r summary statistics}
+
+summary_table <- summary_table(pass = pass_tot, shots = shots_tot, shots_opp = shots_opp_tot)
+print(summary_table)
+xlsx::write.xlsx(x = summary_table, file = paste0(outfolder,"/Zusammenfassung_Statistiken.xlsx"), row.names = FALSE)
 ```
