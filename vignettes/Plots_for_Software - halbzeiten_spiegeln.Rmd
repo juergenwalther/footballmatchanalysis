@@ -39,9 +39,9 @@ halbzeit=1
 
 if(halbzeit==1) chr_hz = "hz1" else chr_hz = "hz2"
 
-pass = fread(file=paste0("C://Users/Juergis/Documents/Fussball/Spielanalyse/Programm/Videoanalyse/",spiel,"/paesse_1hz.csv"))
+pass = fread(file=paste0("C://Users/Juergis/Documents/Fussball/Spielanalyse/Programm/Videoanalyse/ETSV/",spiel,"/paesse_1hz.csv"))
 
-schuss = fread(file=paste0("C://Users/Juergis/Documents/Fussball/Spielanalyse/Programm/Videoanalyse/",spiel,"/schuesse_1hz.csv"))
+schuss = fread(file=paste0("C://Users/Juergis/Documents/Fussball/Spielanalyse/Programm/Videoanalyse/ETSV/",spiel,"/schuesse_1hz.csv"))
 
 spielrichtung_real = "l"  # Die Spielrichtung ist immer von links nach rechts, also "r". Bei anderer Spielrichtung wird das Feld gespiegelt.
 
