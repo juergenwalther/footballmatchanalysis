@@ -17,14 +17,17 @@
 #'
 #' @examples
 plot_pass_heatmap <- function(df, outpath, spielrichtung = "r", plot_heatmap = T, plot_discrete = T, plot_rawdata = T,
+                              title_heatmap = "Heatmap der Pässe", subtitle_heatmap = "blau: wenig Pässe, rot: viele Pässe",
+                              title_discrete = "Heatmap der Pässe", subtitle_discrete = "Häufigkeit der Pässe anhand der Position im Feld",
+                              title_raw = "Passstafetten", subtitle_raw = "Alle Passstafetten während des Spiels (farbcodiert nach gespielten Minuten)",
                               name_heatmap = "paesse_heatmap", name_discrete = "paesse_heatmap_diskret",
                               name_raw = "paesse_rawdata") {
   if (plot_heatmap) {
     soccerHeatmap(df,
       lengthPitch = 105, widthPitch = 68, xBins = 20,
       yBins = 20, kde = TRUE, arrow = spielrichtung,
-      colLow = "white", colHigh = "red", title = "Heatmap der Pässe",
-      subtitle = "blau: wenig Pässe, rot: viele Pässe",
+      colLow = "white", colHigh = "red", title = title_heatmap,
+      subtitle = subtitle_heatmap,
       x = "x", y = "y"
     )
 
@@ -35,8 +38,8 @@ plot_pass_heatmap <- function(df, outpath, spielrichtung = "r", plot_heatmap = T
     soccerHeatmap(df,
       lengthPitch = 105, widthPitch = 68, xBins = 8,
       yBins = 8, kde = FALSE, arrow = spielrichtung,
-      colLow = "white", colHigh = "red", title = "Heatmap der Pässe",
-      subtitle = "Häufigkeit der Pässe anhand der Position im Feld",
+      colLow = "white", colHigh = "red", title = title_discrete,
+      subtitle = subtitle_discrete,
       x = "x", y = "y"
     )
 
@@ -46,8 +49,8 @@ plot_pass_heatmap <- function(df, outpath, spielrichtung = "r", plot_heatmap = T
   if (plot_rawdata) {
     soccerPitch(
       arrow = spielrichtung,
-      title = "Passstafetten",
-      subtitle = "Alle Passstafetten während des Spiels (farbcodiert nach gespielten Minuten)"
+      title = title_raw,
+      subtitle = subtitle_raw
     ) +
       geom_path(
         data = df, aes(x = x, y = y, group = Zeit, color = Zeit),
