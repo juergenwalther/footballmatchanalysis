@@ -257,6 +257,8 @@ for (i in 1:n_sections) {
 plot_shots(df = shots_tot, title = "Schüsse", subtitle = paste0("Position der Schüsse im gesamten Spiel"), outpath = outfolder_shots, filename = paste0("schuesse_total"))
 plot_shots(df = shots_opp_tot, title = "Schüsse des Gegners", subtitle = paste0("Position der Schüsse des Gegners im gesamten Spiel"), outpath = outfolder_shots, filename = paste0("schuesse_gegner_total"))
 ```
+
+
 ```{r summary statistics}
 
 summary_table <- summary_table(pass = pass_tot, shots = shots_tot, shots_opp = shots_opp_tot, pass_areas = pass_areas_tot)
@@ -266,7 +268,8 @@ xlsx::write.xlsx(x = summary_table, file = paste0(outfolder,"/Zusammenfassung_St
 
 df_st <- as.data.frame(summary_table)
 df_st <- df_st  %>% dplyr::mutate_if(is.list, as.character)
-png(file = paste0(outfolder,"/Zusammenfassung_Statistiken.png"))
+
+jpeg(file = paste0(outfolder,"/Zusammenfassung_Statistiken.jpeg"))
 gridExtra::grid.table(df_st, rows = NULL)
 dev.off()
 
