@@ -35,9 +35,9 @@ summary_table <- function(pass, shots, shots_opp, pass_areas, own_area = 22, own
                  "Schüsse des Gegners", "Schüsse des Gegners innerhalb des Strafraums", "Schüsse des Gegners außerhalb des Strafraums", "Ballverlust in und um eigenen Strafraum",
                  "Ballverlust in eigener Hälfte", "Ballverlust in gegnerischer Hälfte", "Ballgewinn in und um eigenen Strafraum",
                  "Ballgewinn in eigener Hälfte", "Ballgewinn in gegnerischer Hälfte",
-                 "Anzahl der Pässe von RV zu RM long line", "Anzahl der Pässe von LV zu LM long line",
-                 "Anzahl der öffnenden Pässe von RV zu ZM", "Anzahl der öffnenden Pässe von LV zu ZM",
-                 "Anzahl der langen Diagonalpässe von ZM auf RM", "Anzahl der langen Diagonalpässe von ZM auf LM")
+                 "Pässe von RV zu RM long line", "Pässe von LV zu LM long line",
+                 "Öffnendn Pässe von RV zu ZM", "Öffnende Pässe von LV zu ZM",
+                 "Lange Diagonalpässe von ZM auf RM", "Lange Diagonalpässe von ZM auf LM")
 
   df_res <- unname(cbind(myrownames, result))
   colnames(df_res) <- c("Parameter", "Anzahl")
