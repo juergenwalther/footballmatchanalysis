@@ -1,0 +1,461 @@
+---
+title: "Videoanalyse"
+author: "Jürgen Walther"
+date: "5/20/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+ 
+Pakete laden, die benötigt werden.
+
+```{r load packages, warning=FALSE,message=FALSE}
+# Main modules
+library(dplyr)
+library(data.table)
+library(ggplot2)
+library(dataPreparation)
+# Modules for specific functions
+library(tidyr)
+library(ggsoccer)
+library(plotly)
+library(soccermatics)
+library(pracma)
+```
+
+# Daten laden
+
+```{r load data}
+
+spiel = "Uettingen-ETSV"
+#spiel = "ETSV-WFVU19"
+halbzeit=1
+
+#pass = read.csv(file="C://Users/Juergis/Documents/Fussball/Spielanalyse/Programm/Videoanalyse/ETSV-WFVU19/paesse_min20-45.csv")
+
+if(halbzeit==1) chr_hz = "hz1" else chr_hz = "hz2"
+
+pass = fread(file=paste0("C://Users/Juergis/Documents/Fussball/Spielanalyse/Programm/Videoanalyse/ETSV/",spiel,"/paesse_1hz.csv"))
+
+schuss = fread(file=paste0("C://Users/Juergis/Documents/Fussball/Spielanalyse/Programm/Videoanalyse/ETSV/",spiel,"/schuesse_1hz.csv"))
+
+spielrichtung_real = "l"  # Die Spielrichtung ist immer von links nach rechts, also "r". Bei anderer Spielrichtung wird das Feld gespiegelt.
+
+
+
+
+```
+
+# Variablen definieren
+
+```{r important variables}
+
+outfolder = paste0("C://Users/Juergis/Documents/Fussball/Spielanalyse/Programm/Software/Script/Plots/",spiel,"/",chr_hz,"_spiegel")
+outpath = paste0(outfolder,"/",chr_hz,"_")
+dir.create(outfolder, showWarnings = TRUE)
+
+spielrichtung = "r"
+arrhead = "last"
+#if(strcmp(spielrichtung,"l")) arrhead = "last" else arrhead = "last"
+```
+
+
+
+```{r normalize data}
+# Unten links auf dem Spielfeld ist die Koordinate (0,0). Die Koordinaten haben ihren Maximalwert in x- und y- Richtung von 100, also die Eckfahne rechts oben ist (100,100)
+
+#Größe von meinem Spielfeld 1136x782
+
+normalize_x = function(x,num){
+  xnew = x/1136*num
+    return(xnew)
+}
+
+normalize_y = function(y,num){
+  ynew = y/782*num
+  ynew = abs(ynew-num)
+  #ynew = ifelse(ynew >= num,ynew-2*(ynew-num),ynew+2*(num-ynew)) 
+  return(ynew)
+}
+```
+
+```{r mirror pitch}
+# Die Spielrichtung wird gespiegelt, wenn von rechts nach links gespielt wird. Standardrichtung wird von links nach rechts sein
+
+mirror_pitch = function(x,center){
+  return(ifelse(x >= center,x-2*(x-center),x+2*(abs(x-center))))
+  #return(xnew)
+}
+
+
+```
+
+
+
+```{r normalized passes}
+
+pass = pass %>% drop_na
+schuss = schuss %>% drop_na
+
+pass_sel = pass %>%
+  select(V2,V3,V4)
+
+colnames(pass_sel) = c("Zeit","x","y")
+pass_norm = pass_sel %>%
+  mutate(x = normalize_x(x,105),
+         y = normalize_y(y,68))
+
+head(pass_norm)
+```
+
+
+```{r mirror passes and shots}
+
+if(strcmp(spielrichtung_real,"l")){
+  pass_norm = pass_norm %>%
+  mutate(x = mirror_pitch(x,52.5),
+         y = mirror_pitch(y,34))
+}
+
+```
+
+
+
+```{r plot pass heatmap}
+
+
+
+soccerHeatmap(as.data.frame(pass_norm), lengthPitch = 105, widthPitch = 68, xBins = 20,
+  yBins = 20, kde = TRUE, arrow = spielrichtung,
+  colLow = "white", colHigh = "red", title = "Heatmap der Pässe", subtitle = "blau ist wenig Pässe, rot ist viele Pässe",
+  x = "x", y = "y")
+
+ggsave(file=paste0(outpath,"paesse_heatmap.png"))
+
+
+soccerHeatmap(as.data.frame(pass_norm), lengthPitch = 105, widthPitch = 68, xBins = 8,
+  yBins = 8, kde = FALSE, arrow = spielrichtung,
+  colLow = "white", colHigh = "red", title = "Heatmap der Pässe", subtitle = "Häufigkeit der Pässe anhand der Position im Feld (Darstellung in Feldern)",
+  x = "x", y = "y")
+
+ggsave(file=paste0(outpath,"paesse_heatmap_diskret.png"))
+
+
+ soccerPitch(arrow = spielrichtung,
+             title = "Passstafetten", 
+             subtitle = "Passstafetten während des Spiels (farbcodiert nach gespielten Minuten)") +
+   geom_path(data = pass_norm, aes(x = x, y = y, group = Zeit, color = Zeit), arrow = arrow(angle = 30, length = unit(0.05, "inches"), ends = arrhead, type = "closed"))
+  #geom_segment(data = pass_norm, aes(x = location.x, xend = pass.end_location.x, y = location.y, yend = pass.end_location.y, col = pass.outcome), alpha = 0.75) +
+  #geom_point(data = d3, aes(x = location.x, y = location.y, col = pass.outcome), alpha = 0.5) +
+  #guides(colour = FALSE)
+ 
+ ggsave(file=paste0(outpath,"paesse_rawdata.png"))
+ 
+ # Passstafetten filtern nach Anzahl der Pässe
+
+```
+
+
+
+```{r ballgewinne}
+
+ballgewinn = pass_norm %>% group_by(Zeit) %>% summarise(winx = x[1],
+                                                winy = y[1])
+
+soccerPitch(arrow = spielrichtung,
+            title = "Ballgewinne", 
+            subtitle = "Position der Ballgewinne im Spiel (farbcodiert nach gespielten Minuten)") +
+  geom_point(data = ballgewinn, aes(x = winx, y = winy, color = Zeit), size=3)
+  #geom_segment(data = d3, aes(x = location.x, xend = pass.end_location.x, y = location.y, yend = pass.end_location.y, col = pass.outcome), alpha = 0.75) +
+  #geom_point(data = d3, aes(x = location.x, y = location.y, col = pass.outcome), alpha = 0.5) +
+  #guides(colour = FALSE)
+
+ggsave(file=paste0(outpath,"ballgewinne.png"))
+
+```
+
+
+```{r ballverluste}
+ballverlust = pass_norm %>% group_by(Zeit) %>% summarise(winx = x[length(x)],
+                                                winy = y[length(y)])
+
+soccerPitch(arrow = spielrichtung,
+            title = "Ballverluste", 
+            subtitle = "Position der Ballverluste im Spiel (farbcodiert nach gespielten Minuten)") +
+  geom_point(data = ballverlust, aes(x = winx, y = winy, color = Zeit), size=3)
+
+ggsave(file=paste0(outpath,"ballverluste.png"))
+```
+
+Passstafetten mit Ballgewinn über der Mittellinie
+
+```{r konterchance}
+
+if(strcmp(spielrichtung,"l")){
+  konterchance = pass_norm %>% group_by(Zeit) %>% filter(x[1] < 53)
+} else {
+  konterchance = pass_norm %>% group_by(Zeit) %>% filter(x[1] > 53)  
+  }
+  
+
+soccerPitch(arrow = spielrichtung,
+             title = "Passstafetten nach Ballgewinnen über der Mittellinie", 
+             subtitle = "farbcodiert nach gespielten Minuten") +
+   geom_path(data = konterchance, aes(x = x, y = y, group = Zeit, color = Zeit), arrow = arrow(angle = 30, length = unit(0.1, "inches"), ends = "last", type = "closed"))
+
+
+
+ggsave(file=paste0(outpath,"konterchance.png"))
+  
+```
+
+
+Passstafetten länger als eine bestimme Anzahl an Stationen
+
+```{r passstafetten mehr als x Pässe}
+mehr_als_zehn = pass_norm %>% group_by(Zeit) %>% filter(length(x) > 10)
+
+
+soccerPitch(arrow = spielrichtung,
+             title = "Passstafetten mehr als zehn Pässe", 
+             subtitle = "farbcodiert nach gespielten Minuten") +
+   geom_path(data = mehr_als_zehn, aes(x = x, y = y, group = Zeit, color = Zeit), arrow = arrow(angle = 30, length = unit(0.1, "inches"), ends = "last", type = "closed"))
+
+ggsave(file=paste0(outpath,"mehrals10paesse.png"))
+
+
+mehr_als_zw = pass_norm %>% group_by(Zeit) %>% filter(length(x) > 15)
+
+
+soccerPitch(arrow = spielrichtung,
+             title = "Passstafetten mehr als 15 Pässe", 
+             subtitle = "farbcodiert nach gespielten Minuten") +
+   geom_path(data = mehr_als_zw, aes(x = x, y = y, group = Zeit, color = Zeit), arrow = arrow(angle = 30, length = unit(0.1, "inches"), ends = "last", type = "closed"))
+
+ggsave(file=paste0(outpath,"mehrals15paesse.png"))
+```
+
+
+
+# Passstafetten eingrenzen nach Position
+
+```{r passstafetten eingrenzen nach Position}
+# Nur Pässe herausfiltern mit Koordinaten in einer bestimmen Position (z.B. RV). In welche Richtung spielt der RV seine Pässe? zum IV, DM oder RM?
+
+#RV
+#rv = pass_norm %>% group_by(Zeit) %>% filter(x > 70 & y > 50)
+
+paesse_zwischen_positionen = function(i,df,a,b)
+{
+  a = (df$Zeit[i] == df$Zeit[i+1]) & df$x[i] > a$x1 & df$x[i] < a$x2 & df$y[i] > a$y1 & df$y[i] < a$y2 & df$x[i+1] > b$x1 & df$x[i+1] < b$x2 & df$y[i+1] > b$y1 & df$y[i+1] < b$y2 
+  if(a){
+    df$Zeit[c(i,i+1)] = i
+    return(df[c(i,i+1),])
+  }
+    else return(NULL)
+}
+
+
+# Vertediger
+if(strcmp(spielrichtung,"l")){
+  rv <- data.frame(x1 = 70, x2 = 105, y1 = 54, y2 = 68) #(x1,x2,y1,y2) (x1,y1) sind die Koordinaten des Punktes links unten im Rechteck, (x2,y2) sind die Koordinaten rechts oben im Rechteck
+  lv <- data.frame(x1 = 70, x2 = 105, y1 = 0, y2 = 14)
+  riv <- data.frame(x1 = 70, x2 = 105, y1 = 34, y2 = 54)
+  liv <- data.frame(x1 = 70, x2 = 105, y1 = 14, y2 = 34)
+  rm <- data.frame(x1 = 30, x2 = 75, y1 = 54, y2 = 68)
+  lm <- data.frame(x1 = 30, x2 = 75, y1 = 0, y2 = 14)
+  halbraum_rechts = data.frame(x1 = 22, x2 = 82, y1 = 38, y2 = 54)
+  halbraum_links = data.frame(x1 = 22, x2 = 82, y1 = 14, y2 = 30)
+} else{
+    rv <- data.frame(x1 = 0, x2 = 35, y1 = 0, y2 = 14) #(x1,x2,y1,y2) (x1,y1) sind die Koordinaten des Punktes links unten im Rechteck, (x2,y2) sind die Koordinaten rechts oben im Rechteck
+    lv <- data.frame(x1 = 0, x2 = 35, y1 = 54, y2 = 68)
+    riv <- data.frame(x1 = 0, x2 = 35, y1 = 14, y2 = 34)
+    liv <- data.frame(x1 = 0, x2 = 35, y1 = 34, y2 = 54)
+    rm <- data.frame(x1 = 30, x2 = 75, y1 = 0, y2 = 14)
+    lm <- data.frame(x1 = 30, x2 = 75, y1 = 54, y2 = 68)
+    halbraum_rechts = data.frame(x1 = 22, x2 = 82, y1 = 14, y2 = 30)
+    halbraum_links = data.frame(x1 = 22, x2 = 82, y1 = 38, y2 = 54)
+}
+
+
+
+
+rvrm = do.call("rbind",lapply(1:(nrow(pass_norm)-1), paesse_zwischen_positionen, pass_norm, rv,rm))
+lvlm = do.call("rbind",lapply(1:(nrow(pass_norm)-1), paesse_zwischen_positionen, pass_norm, lv,lm))
+
+rvhr = do.call("rbind",lapply(1:(nrow(pass_norm)-1), paesse_zwischen_positionen, pass_norm, rv,halbraum_rechts))
+lvhl = do.call("rbind",lapply(1:(nrow(pass_norm)-1), paesse_zwischen_positionen, pass_norm, lv,halbraum_links))
+
+livhr = do.call("rbind",lapply(1:(nrow(pass_norm)-1), paesse_zwischen_positionen, pass_norm, liv,halbraum_rechts))
+rivhl = do.call("rbind",lapply(1:(nrow(pass_norm)-1), paesse_zwischen_positionen, pass_norm, riv,halbraum_links))
+
+rivhr = do.call("rbind",lapply(1:(nrow(pass_norm)-1), paesse_zwischen_positionen, pass_norm, riv,halbraum_rechts))
+livhl = do.call("rbind",lapply(1:(nrow(pass_norm)-1), paesse_zwischen_positionen, pass_norm, liv,halbraum_links))
+
+#a = which(pass_norm$x > 78 & pass_norm$y > 50)
+#b = sort(unique(c(a,a+1)))
+#rv = pass_norm[b,]
+
+if(!is.null(rvrm)){
+soccerPitch(arrow = spielrichtung,
+             title = "Pässe von Rechtsverteidiger zu rechtem Mittelfeld", 
+             subtitle = "farbcodiert nach gespielten Minuten") +
+  geom_line(data = rvrm, aes(x = x, y = y, group = Zeit, color = Zeit), arrow = arrow(angle = 30, length = unit(0.05, "inches"), ends = "last", type = "closed")) + 
+              geom_rect(data=rv, mapping=aes(xmin=x1, xmax=x2, ymin=y1, ymax=y2), color="red", alpha=0.05) +
+  geom_rect(data=rm, mapping=aes(xmin=x1, xmax=x2, ymin=y1, ymax=y2), color="green", alpha=0.05)
+
+
+ggsave(file=paste0(outpath,"rv_rm.png"))
+}
+
+
+if(!is.null(lvlm)){
+soccerPitch(arrow = spielrichtung,
+             title = "Pässe von Linksverteidiger zu linkem Mittelfeld", 
+             subtitle = "farbcodiert nach gespielten Minuten") +
+  geom_line(data = lvlm, aes(x = x, y = y, group = Zeit, color = Zeit), arrow = arrow(angle = 30, length = unit(0.05, "inches"), ends = "last", type = "closed")) + 
+              geom_rect(data=lv, mapping=aes(xmin=x1, xmax=x2, ymin=y1, ymax=y2), color="red", alpha=0.05) +
+  geom_rect(data=lm, mapping=aes(xmin=x1, xmax=x2, ymin=y1, ymax=y2), color="green", alpha=0.05)
+
+
+ggsave(file=paste0(outpath,"lv_lm.png"))
+}
+
+
+if(!is.null(rvhr)){
+soccerPitch(arrow = spielrichtung,
+             title = "Pässe von Rechtsverteidiger zu Halbraum", 
+             subtitle = "farbcodiert nach gespielten Minuten") +
+  geom_line(data = rvhr, aes(x = x, y = y, group = Zeit, color = Zeit), arrow = arrow(angle = 30, length = unit(0.05, "inches"), ends = "last", type = "closed")) + 
+              geom_rect(data=rv, mapping=aes(xmin=x1, xmax=x2, ymin=y1, ymax=y2), color="red", alpha=0.05) +
+  geom_rect(data=halbraum_rechts, mapping=aes(xmin=x1, xmax=x2, ymin=y1, ymax=y2), color="green", alpha=0.05)
+
+ggsave(file=paste0(outpath,"rv_halbraum.png"))
+}
+
+
+if(!is.null(lvhl)){
+soccerPitch(arrow = spielrichtung,
+             title = "Pässe von Linksverteidiger zu Halbraum", 
+             subtitle = "farbcodiert nach gespielten Minuten") +
+  geom_line(data = lvhl, aes(x = x, y = y, group = Zeit, color = Zeit), arrow = arrow(angle = 30, length = unit(0.05, "inches"), ends = "last", type = "closed")) + 
+              geom_rect(data=lv, mapping=aes(xmin=x1, xmax=x2, ymin=y1, ymax=y2), color="red", alpha=0.05) +
+  geom_rect(data=halbraum_links, mapping=aes(xmin=x1, xmax=x2, ymin=y1, ymax=y2), color="green", alpha=0.05)
+
+ggsave(file=paste0(outpath,"lv_halbraum.png"))
+}
+
+if(!is.null(livhr)){
+soccerPitch(arrow = spielrichtung,
+             title = "Pässe von linker Innenverteidiger zu Halbraum rechts", 
+             subtitle = "farbcodiert nach gespielten Minuten") +
+  geom_line(data = livhr, aes(x = x, y = y, group = Zeit, color = Zeit), arrow = arrow(angle = 30, length = unit(0.05, "inches"), ends = "last", type = "closed")) + 
+              geom_rect(data=liv, mapping=aes(xmin=x1, xmax=x2, ymin=y1, ymax=y2), color="red", alpha=0.05) +
+  geom_rect(data=halbraum_rechts, mapping=aes(xmin=x1, xmax=x2, ymin=y1, ymax=y2), color="green", alpha=0.05)
+
+ggsave(file=paste0(outpath,"liv_halbraumrechts.png"))
+}
+
+if(!is.null(rivhl)){
+soccerPitch(arrow = spielrichtung,
+             title = "Pässe von rechter Innenverteidiger zu Halbraum links", 
+             subtitle = "farbcodiert nach gespielten Minuten") +
+  geom_line(data = rivhl, aes(x = x, y = y, group = Zeit, color = Zeit), arrow = arrow(angle = 30, length = unit(0.05, "inches"), ends = "last", type = "closed")) + 
+              geom_rect(data=riv, mapping=aes(xmin=x1, xmax=x2, ymin=y1, ymax=y2), color="red", alpha=0.05) +
+  geom_rect(data=halbraum_links, mapping=aes(xmin=x1, xmax=x2, ymin=y1, ymax=y2), color="green", alpha=0.05)
+
+ggsave(file=paste0(outpath,"riv_halbraumlinks.png"))
+}
+
+if(!is.null(rivhr)){
+soccerPitch(arrow = spielrichtung,
+             title = "Pässe von rechter Innenverteidiger zu Halbraum rechts", 
+             subtitle = "farbcodiert nach gespielten Minuten") +
+  geom_line(data = rivhr, aes(x = x, y = y, group = Zeit, color = Zeit), arrow = arrow(angle = 30, length = unit(0.05, "inches"), ends = "last", type = "closed")) + 
+              geom_rect(data=riv, mapping=aes(xmin=x1, xmax=x2, ymin=y1, ymax=y2), color="red", alpha=0.05) +
+  geom_rect(data=halbraum_rechts, mapping=aes(xmin=x1, xmax=x2, ymin=y1, ymax=y2), color="green", alpha=0.05)
+
+ggsave(file=paste0(outpath,"riv_halbraumrechts.png"))
+}
+
+if(!is.null(livhl)){
+soccerPitch(arrow = spielrichtung,
+             title = "Pässe von linker Innenverteidiger zu Halbraum links", 
+             subtitle = "farbcodiert nach gespielten Minuten") +
+  geom_line(data = livhl, aes(x = x, y = y, group = Zeit, color = Zeit), arrow = arrow(angle = 30, length = unit(0.05, "inches"), ends = "last", type = "closed")) + 
+              geom_rect(data=liv, mapping=aes(xmin=x1, xmax=x2, ymin=y1, ymax=y2), color="red", alpha=0.05) +
+  geom_rect(data=halbraum_links, mapping=aes(xmin=x1, xmax=x2, ymin=y1, ymax=y2), color="green", alpha=0.05)
+
+ggsave(file=paste0(outpath,"liv_halbraumlinks.png"))
+}
+
+
+# #b = sort(unique(c(a-1,a)))
+# #rv = pass_norm[b,]
+# 
+# #soccerPitch(arrow = "l",
+#              title = "Pässe zu Rechtsverteidiger", 
+#              subtitle = "farbcodiert nach gespielten Minuten") +
+#    geom_line(data = rv, aes(x = x, y = y, group = Zeit, color = Zeit))
+
+
+
+#ggsave(file=paste0(outpath,"konterchance.png"))
+
+
+```
+
+
+
+```{r ballgewinne und ballverluste im Raum der Position des Spielers}
+
+
+
+```
+
+
+
+```{r Passstafetten nach Einwürfen}
+
+```
+
+
+```{r Pässe vor Ballverlust}
+
+```
+
+
+
+```{r Vergleich der Passstatistiken 1. vs. 2. Halbzeit}
+
+```
+
+
+
+```{r schuesse aufs Tor}
+
+schuss_sel = schuss %>%
+  select(V2,V3,V4)
+
+colnames(schuss_sel) = c("Zeit","x","y")
+schuss_norm = schuss_sel %>%
+  mutate(x = normalize_x(x,105),
+         y = normalize_y(y,68))
+
+soccerPitch(arrow = spielrichtung,
+            title = "Schüsse", 
+            subtitle = "Position der abgegebenen Schüsse (farbcodiert nach gespielten Minuten)") +
+  geom_point(data = schuss_norm, aes(x = x, y = y, color = Zeit), size=3)
+  #geom_segment(data = d3, aes(x = location.x, xend = pass.end_location.x, y = location.y, yend = pass.end_location.y, col = pass.outcome), alpha = 0.75) +
+  #geom_point(data = d3, aes(x = location.x, y = location.y, col = pass.outcome), alpha = 0.5) +
+  #guides(colour = FALSE)
+
+ggsave(file=paste0(outpath,"schuesse.png"))
+```
+
+
+

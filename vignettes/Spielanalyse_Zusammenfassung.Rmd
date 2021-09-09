@@ -1,0 +1,182 @@
+---
+title: "Spielanalyse Zusammenfassung"
+author: "Dr. Jürgen Walther"
+date: "9/7/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r load packages, warning=FALSE,message=FALSE, echo=FALSE}
+# Main modules
+library(dplyr)
+library(ggplot2)
+# Modules for specific functions
+library(tidyr)
+# Plot moduless
+library(pracma)
+library(MASS)
+library(ggforce)
+library(cowplot)
+# Write files modules
+library(xlsx)
+```
+
+# Daten laden
+
+```{r load data, warning=FALSE,message=FALSE, echo=FALSE}
+
+path <- "C://Users/Juergis/Documents/Fussball/Spielanalyse/Programm/Videoanalyse/WFV"
+
+# Folder name of match analysis
+spiel <- "20200905_Seligenporten-WFV"
+
+# Number of sections to divide match analysis
+n_sections <- 6
+
+# Which plots do I want to plot?
+plot_heatmaps_sections <- FALSE
+plot_heatmap <- TRUE
+plot_heatmap_discrete <- FALSE
+plot_raw_data <- FALSE
+
+# Spielrichtung im realen Spiel
+spielrichtung_real <- c(rep("r", 3), rep("l", 3)) # Die Spielrichtung in der Analyse ist immer von links nach rechts, also "r". Bei anderer Spielrichtung wird das Feld gespiegelt.
+
+filenames <- c("paesse", "schuesse", "schuesse_gegner")
+
+all_data <- lapply(filenames, function(file) {
+  footballmatchanalysis::load_all_sections(
+    filename = file,
+    spiel = spiel,
+    path = path,
+    num_sections = n_sections
+  )
+})
+
+
+
+```
+
+# Variablen definieren
+
+```{r important variables, warning=FALSE,message=FALSE, echo=FALSE}
+
+outfolder <- paste0(path, "/", spiel, "/Analyse")
+# dir.create(outfolder, showWarnings = TRUE)
+
+outfolder_pass <- paste0(outfolder,"/Paesse")
+outfolder_balls <- paste0(outfolder,"/Balluebernahme")
+outfolder_shots <- paste0(outfolder,"/Schuesse")
+outfolder_tactics <- paste0(outfolder,"/Taktik")
+
+arrhead <- "last"
+```
+
+# Normalize and mirror data
+
+```{r mirror data, warning=FALSE,message=FALSE, echo=FALSE}
+
+all_data_norm_mirrored <- lapply(1:length(all_data), function(i) {
+  lapply(1:length(all_data[[i]]), function(x) {
+    footballmatchanalysis::mirror_sequences(
+      footballmatchanalysis::normalize_sequences(all_data[[i]][[x]]),
+      spielrichtung_real = spielrichtung_real[x]
+    )
+  })
+})
+
+pass <- all_data_norm_mirrored[[1]]
+shots <- all_data_norm_mirrored[[2]]
+shots_opp <- all_data_norm_mirrored[[3]]
+```
+
+
+
+```{r create total data.frame, warning=FALSE,message=FALSE, echo=FALSE}
+
+pass_tot <- merge_sequences(pass)
+
+```
+
+```{r plot passes}
+if(isTRUE(plot_heatmaps_sections)){
+for (i in 1:n_sections) {
+  plot_pass_heatmap(
+    df = pass[[i]],
+    outpath = outfolder_pass,
+    title_heatmap = "Heatmap der Pässe", 
+    subtitle_heatmap = paste0("Spielabschnitt ",i),
+    title_discrete = "Heatmap der Pässe",
+    subtitle_discrete = paste0("Häufigkeit der Pässe im Spielabschnitt ",i),
+    title_raw = "Passstafetten", 
+    subtitle_raw = paste0("Spielabschnitt ",i),
+    name_heatmap = paste0("paesse_heatmap_", i),
+    name_discrete = paste0("paesse_heatmap_diskret_", i),
+    name_raw = paste0("paesse_rawdata_", i),
+    plot_heatmap = plot_heatmap, 
+    plot_discrete = plot_discrete, 
+    plot_rawdata = plot_raw_data
+  )
+}
+}
+
+plot_pass_heatmap(
+    df = pass_tot,
+    outpath = outfolder_pass,
+    title_heatmap = "Heatmap der Pässe", 
+    subtitle_heatmap = paste0("Gesamtes Spiel"),
+    title_discrete = "Heatmap der Pässe",
+    subtitle_discrete = paste0("Häufigkeit der Pässe im gesamten Spiel"),
+    title_raw = "Passstafetten", 
+    subtitle_raw = paste0("Gesamtes Spiel"),
+    name_heatmap = paste0("paesse_heatmap_total"),
+    name_discrete = paste0("paesse_heatmap_diskret_total"),
+    name_raw = paste0("paesse_rawdata_total"),
+    plot_heatmap = plot_heatmap, 
+    plot_discrete = plot_discrete, 
+    plot_rawdata = plot_raw_data
+  )
+```
+
+```{r plot balls}
+# Get balls won and balls lost
+ls_balls_lost <- lapply(pass, balls_lost)
+ls_balls_won <- lapply(pass, balls_won)
+
+# Get total balls won and total balls lost
+balls_lost_tot <- merge_sequences(ls_balls_lost)
+balls_won_tot <- merge_sequences(ls_balls_won)
+
+for (i in 1:n_sections) {
+  plot_balls(df = ls_balls_won[[i]], title = "Ballgewinne", subtitle = paste0("Position der Ballgewinne in Spielabschnitt ",i), outpath = outfolder_balls, filename = paste0("ballgewinne_", i))
+  plot_balls(df = ls_balls_lost[[i]], title = "Ballverluste", subtitle = paste0("Position der Ballverluste in Spielabschnitt ",i), outpath = outfolder_balls, filename = paste0("ballverluste_", i))
+}
+
+plot_balls(df = balls_won_tot, title = "Ballgewinne", subtitle = paste0("Position der Ballgewinne im gesamten Spiel"), outpath = outfolder_balls, filename = paste0("ballgewinne_total"))
+plot_balls(df = balls_lost_tot, title = "Ballverluste", subtitle = paste0("Position der Ballverluste im gesamten Spiel"), outpath = outfolder_balls, filename = paste0("ballverluste_total"))
+```
+
+```{r plot shots}
+
+# Get total balls won and total balls lost
+shots_tot <- merge_sequences(shots)
+shots_opp_tot <- merge_sequences(shots_opp)
+
+for (i in 1:n_sections) {
+  plot_shots(df = shots[[i]], title = "Schüsse", subtitle = paste0("Position der Schüsse in Spielabschnitt ",i), outpath = outfolder_shots, filename = paste0("schuesse_", i))
+  plot_shots(df = shots_opp[[i]], title = "Schüsse des Gegners", subtitle = paste0("Position der Schüsse des Gegners in Spielabschnitt ",i), outpath = outfolder_shots, filename = paste0("schuesse_gegner_", i))
+}
+
+plot_shots(df = shots_tot, title = "Schüsse", subtitle = paste0("Position der Schüsse im gesamten Spiel"), outpath = outfolder_shots, filename = paste0("schuesse_total"))
+plot_shots(df = shots_opp_tot, title = "Schüsse des Gegners", subtitle = paste0("Position der Schüsse des Gegners im gesamten Spiel"), outpath = outfolder_shots, filename = paste0("schuesse_gegner_total"))
+```
+```{r summary statistics}
+
+summary_table <- summary_table(pass = pass_tot, shots = shots_tot, shots_opp = shots_opp_tot)
+print(summary_table)
+xlsx::write.xlsx(x = summary_table, file = paste0(outfolder,"/Zusammenfassung_Statistiken.xlsx"), row.names = FALSE)
+```
