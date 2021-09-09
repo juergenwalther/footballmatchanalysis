@@ -37,6 +37,12 @@ spiel <- "20200905_Seligenporten-WFV"
 # Number of sections to divide match analysis
 n_sections <- 6
 
+# Which plots do I want to plot?
+plot_heatmaps_sections <- FALSE
+plot_heatmap <- TRUE
+plot_heatmap_discrete <- FALSE
+plot_raw_data <- FALSE
+
 # Spielrichtung im realen Spiel
 spielrichtung_real <- c(rep("r", 3), rep("l", 3)) # Die Spielrichtung in der Analyse ist immer von links nach rechts, also "r". Bei anderer Spielrichtung wird das Feld gespiegelt.
 
@@ -97,6 +103,7 @@ pass_tot <- merge_sequences(pass)
 ```
 
 ```{r plot passes}
+if(isTRUE(plot_heatmaps_sections)){
 for (i in 1:n_sections) {
   plot_pass_heatmap(
     df = pass[[i]],
@@ -109,8 +116,12 @@ for (i in 1:n_sections) {
     subtitle_raw = paste0("Spielabschnitt ",i),
     name_heatmap = paste0("paesse_heatmap_", i),
     name_discrete = paste0("paesse_heatmap_diskret_", i),
-    name_raw = paste0("paesse_rawdata_", i)
+    name_raw = paste0("paesse_rawdata_", i),
+    plot_heatmap = plot_heatmap, 
+    plot_discrete = plot_discrete, 
+    plot_rawdata = plot_raw_data
   )
+}
 }
 
 plot_pass_heatmap(
@@ -124,7 +135,10 @@ plot_pass_heatmap(
     subtitle_raw = paste0("Gesamtes Spiel"),
     name_heatmap = paste0("paesse_heatmap_total"),
     name_discrete = paste0("paesse_heatmap_diskret_total"),
-    name_raw = paste0("paesse_rawdata_total")
+    name_raw = paste0("paesse_rawdata_total"),
+    plot_heatmap = plot_heatmap, 
+    plot_discrete = plot_discrete, 
+    plot_rawdata = plot_raw_data
   )
 ```
 
