@@ -3,8 +3,8 @@ summary_table <- function(pass, shots, shots_opp, own_area = 22, own_half = 52.5
   df_balls_won <- balls_won(pass)
 
   n_pass <- nrow(pass)
-  n_pass_more10 <- nrow(get_pass_sequences(pass, n = 10))
-  n_pass_more20 <- nrow(get_pass_sequences(pass, n = 20))
+  n_pass_more10 <- get_pass_sequences(pass_tot, n = 10) %>% ungroup() %>% dplyr::select(Zeit) %>% dplyr::distinct() %>% summarise(n())
+  n_pass_more20 <- get_pass_sequences(pass_tot, n = 20) %>% ungroup() %>% dplyr::select(Zeit) %>% dplyr::distinct() %>% summarise(n())
   n_shots <- nrow(shots)
   n_shots_inside_area <- shots %>% filter(x > opponent_area) %>% summarise(n())
   n_shots_outside_area <- n_shots - n_shots_inside_area
