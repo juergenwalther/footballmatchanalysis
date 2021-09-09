@@ -141,6 +141,82 @@ plot_pass_heatmap(
     plot_rawdata = plot_raw_data
   )
 ```
+```{r passes between areas}
+
+areas <- define_areas()
+
+
+# Passes of defenders
+rvm <- do.call("rbind", lapply(1:(nrow(pass_tot) - 1), get_passes_between_areas, pass_tot, areas$rv, areas$m))
+rvrm <- do.call("rbind", lapply(1:(nrow(pass_tot) - 1), get_passes_between_areas, pass_tot, areas$rv, areas$rm))
+lvm <- do.call("rbind", lapply(1:(nrow(pass_tot) - 1), get_passes_between_areas, pass_tot, areas$lv, areas$m))
+lvlm <- do.call("rbind", lapply(1:(nrow(pass_tot) - 1), get_passes_between_areas, pass_tot, areas$lv, areas$lm))
+
+# Passes of midfield
+mrm <- do.call("rbind", lapply(1:(nrow(pass_tot) - 1), get_passes_between_areas, pass_tot, areas$m, areas$rm))
+mlm <- do.call("rbind", lapply(1:(nrow(pass_tot) - 1), get_passes_between_areas, pass_tot, areas$m, areas$lm))
+
+
+```
+
+```{r plot passes between areas}
+
+plot_passes_between_areas(
+  df = rvm,
+  pos1 = areas$rv,
+  pos2 = areas$m,
+  title = "Pässe von Rechtsverteidiger zu zentralem Mittelfeld",
+  outpath = outfolder_tactics,
+  filename = "rv_to_m_total"
+)
+
+plot_passes_between_areas(
+  df = rvrm,
+  pos1 = areas$rv,
+  pos2 = areas$rm,
+  title = "Pässe von Rechtsverteidiger zu rechter Außenbahn",
+  outpath = outfolder_tactics,
+  filename = "rv_to_rm_total"
+)
+
+plot_passes_between_areas(
+  df = lvm,
+  pos1 = areas$lv,
+  pos2 = areas$m,
+  title = "Pässe von Linksverteidiger zu zentralem Mittelfeld",
+  outpath = outfolder_tactics,
+  filename = "lv_to_m_total"
+)
+
+plot_passes_between_areas(
+  df = lvlm,
+  pos1 = areas$lv,
+  pos2 = areas$lm,
+  title = "Pässe von Linksverteidiger zu linker Außenbahn",
+  outpath = outfolder_tactics,
+  filename = "lv_to_lm_total"
+)
+
+plot_passes_between_areas(
+  df = mlm,
+  pos1 = areas$m,
+  pos2 = areas$lm,
+  title = "Pässe von zentralem Mittelfeld zu linker Außenbahn",
+  outpath = outfolder_tactics,
+  filename = "m_to_lm_total"
+)
+
+plot_passes_between_areas(
+  df = mrm,
+  pos1 = areas$m,
+  pos2 = areas$rm,
+  title = "Pässe von zentralem Mittelfeld zu rechter Außenbahn",
+  outpath = outfolder_tactics,
+  filename = "m_to_rm_total"
+)
+```
+
+
 
 ```{r plot balls}
 # Get balls won and balls lost
