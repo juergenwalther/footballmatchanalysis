@@ -61,9 +61,6 @@ all_data <- lapply(filenames, function(file) {
     num_sections = n_sections
   )
 })
-
-
-
 ```
 
 # Variablen definieren
@@ -73,10 +70,10 @@ all_data <- lapply(filenames, function(file) {
 outfolder <- paste0(path, "/", spiel, "/Analyse")
 # dir.create(outfolder, showWarnings = TRUE)
 
-outfolder_pass <- paste0(outfolder,"/Paesse")
-outfolder_balls <- paste0(outfolder,"/Balluebernahme")
-outfolder_shots <- paste0(outfolder,"/Schuesse")
-outfolder_tactics <- paste0(outfolder,"/Taktik")
+outfolder_pass <- paste0(outfolder, "/Paesse")
+outfolder_balls <- paste0(outfolder, "/Balluebernahme")
+outfolder_shots <- paste0(outfolder, "/Schuesse")
+outfolder_tactics <- paste0(outfolder, "/Taktik")
 
 arrhead <- "last"
 ```
@@ -104,47 +101,46 @@ shots_opp <- all_data_norm_mirrored[[3]]
 ```{r create total data.frame, warning=FALSE,message=FALSE, echo=FALSE}
 
 pass_tot <- merge_sequences(pass)
-
 ```
 
 ```{r plot passes}
-if(isTRUE(plot_heatmaps_sections)){
-for (i in 1:n_sections) {
-  plot_pass_heatmap(
-    df = pass[[i]],
-    outpath = outfolder_pass,
-    title_heatmap = "Heatmap der Pässe", 
-    subtitle_heatmap = paste0("Spielabschnitt ",i),
-    title_discrete = "Heatmap der Pässe",
-    subtitle_discrete = paste0("Häufigkeit der Pässe im Spielabschnitt ",i),
-    title_raw = "Passstafetten", 
-    subtitle_raw = paste0("Spielabschnitt ",i),
-    name_heatmap = paste0("paesse_heatmap_", i),
-    name_discrete = paste0("paesse_heatmap_diskret_", i),
-    name_raw = paste0("paesse_rawdata_", i),
-    plot_heatmap = plot_heatmap, 
-    plot_discrete = plot_discrete, 
-    plot_rawdata = plot_raw_data
-  )
-}
+if (isTRUE(plot_heatmaps_sections)) {
+  for (i in 1:n_sections) {
+    plot_pass_heatmap(
+      df = pass[[i]],
+      outpath = outfolder_pass,
+      title_heatmap = "Heatmap der Pässe",
+      subtitle_heatmap = paste0("Spielabschnitt ", i),
+      title_discrete = "Heatmap der Pässe",
+      subtitle_discrete = paste0("Häufigkeit der Pässe im Spielabschnitt ", i),
+      title_raw = "Passstafetten",
+      subtitle_raw = paste0("Spielabschnitt ", i),
+      name_heatmap = paste0("paesse_heatmap_", i),
+      name_discrete = paste0("paesse_heatmap_diskret_", i),
+      name_raw = paste0("paesse_rawdata_", i),
+      plot_heatmap = plot_heatmap,
+      plot_discrete = plot_discrete,
+      plot_rawdata = plot_raw_data
+    )
+  }
 }
 
 plot_pass_heatmap(
-    df = pass_tot,
-    outpath = outfolder_pass,
-    title_heatmap = "Heatmap der Pässe", 
-    subtitle_heatmap = paste0("Gesamtes Spiel"),
-    title_discrete = "Heatmap der Pässe",
-    subtitle_discrete = paste0("Häufigkeit der Pässe im gesamten Spiel"),
-    title_raw = "Passstafetten", 
-    subtitle_raw = paste0("Gesamtes Spiel"),
-    name_heatmap = paste0("paesse_heatmap_total"),
-    name_discrete = paste0("paesse_heatmap_diskret_total"),
-    name_raw = paste0("paesse_rawdata_total"),
-    plot_heatmap = plot_heatmap, 
-    plot_discrete = plot_heatmap_discrete, 
-    plot_rawdata = plot_raw_data
-  )
+  df = pass_tot,
+  outpath = outfolder_pass,
+  title_heatmap = "Heatmap der Pässe",
+  subtitle_heatmap = paste0("Gesamtes Spiel"),
+  title_discrete = "Heatmap der Pässe",
+  subtitle_discrete = paste0("Häufigkeit der Pässe im gesamten Spiel"),
+  title_raw = "Passstafetten",
+  subtitle_raw = paste0("Gesamtes Spiel"),
+  name_heatmap = paste0("paesse_heatmap_total"),
+  name_discrete = paste0("paesse_heatmap_diskret_total"),
+  name_raw = paste0("paesse_rawdata_total"),
+  plot_heatmap = plot_heatmap,
+  plot_discrete = plot_heatmap_discrete,
+  plot_rawdata = plot_raw_data
+)
 ```
 ```{r passes between areas}
 
@@ -162,8 +158,6 @@ mrm <- do.call("rbind", lapply(1:(nrow(pass_tot) - 1), get_passes_between_areas,
 mlm <- do.call("rbind", lapply(1:(nrow(pass_tot) - 1), get_passes_between_areas, pass_tot, areas$m, areas$lm))
 
 pass_areas_tot <- list(rvm = rvm, rvrm = rvrm, lvm = lvm, lvlm = lvlm, mrm = mrm, mlm = mlm)
-
-
 ```
 
 ```{r plot passes between areas}
@@ -235,8 +229,8 @@ balls_lost_tot <- merge_sequences(ls_balls_lost)
 balls_won_tot <- merge_sequences(ls_balls_won)
 
 for (i in 1:n_sections) {
-  plot_balls(df = ls_balls_won[[i]], title = "Ballgewinne", subtitle = paste0("Position der Ballgewinne in Spielabschnitt ",i), outpath = outfolder_balls, filename = paste0("ballgewinne_", i))
-  plot_balls(df = ls_balls_lost[[i]], title = "Ballverluste", subtitle = paste0("Position der Ballverluste in Spielabschnitt ",i), outpath = outfolder_balls, filename = paste0("ballverluste_", i))
+  plot_balls(df = ls_balls_won[[i]], title = "Ballgewinne", subtitle = paste0("Position der Ballgewinne in Spielabschnitt ", i), outpath = outfolder_balls, filename = paste0("ballgewinne_", i))
+  plot_balls(df = ls_balls_lost[[i]], title = "Ballverluste", subtitle = paste0("Position der Ballverluste in Spielabschnitt ", i), outpath = outfolder_balls, filename = paste0("ballverluste_", i))
 }
 
 plot_balls(df = balls_won_tot, title = "Ballgewinne", subtitle = paste0("Position der Ballgewinne im gesamten Spiel"), outpath = outfolder_balls, filename = paste0("ballgewinne_total"))
@@ -250,8 +244,8 @@ shots_tot <- merge_sequences(shots)
 shots_opp_tot <- merge_sequences(shots_opp)
 
 for (i in 1:n_sections) {
-  plot_shots(df = shots[[i]], title = "Schüsse", subtitle = paste0("Position der Schüsse in Spielabschnitt ",i), outpath = outfolder_shots, filename = paste0("schuesse_", i))
-  plot_shots(df = shots_opp[[i]], title = "Schüsse des Gegners", subtitle = paste0("Position der Schüsse des Gegners in Spielabschnitt ",i), outpath = outfolder_shots, filename = paste0("schuesse_gegner_", i))
+  plot_shots(df = shots[[i]], title = "Schüsse", subtitle = paste0("Position der Schüsse in Spielabschnitt ", i), outpath = outfolder_shots, filename = paste0("schuesse_", i))
+  plot_shots(df = shots_opp[[i]], title = "Schüsse des Gegners", subtitle = paste0("Position der Schüsse des Gegners in Spielabschnitt ", i), outpath = outfolder_shots, filename = paste0("schuesse_gegner_", i))
 }
 
 plot_shots(df = shots_tot, title = "Schüsse", subtitle = paste0("Position der Schüsse im gesamten Spiel"), outpath = outfolder_shots, filename = paste0("schuesse_total"))
@@ -263,14 +257,13 @@ plot_shots(df = shots_opp_tot, title = "Schüsse des Gegners", subtitle = paste0
 
 summary_table <- summary_table(pass = pass_tot, shots = shots_tot, shots_opp = shots_opp_tot, pass_areas = pass_areas_tot)
 print(summary_table)
-xlsx::write.xlsx(x = summary_table, file = paste0(outfolder,"/Zusammenfassung_Statistiken.xlsx"), row.names = FALSE)
+xlsx::write.xlsx(x = summary_table, file = paste0(outfolder, "/Zusammenfassung_Statistiken.xlsx"), row.names = FALSE)
 
 
 df_st <- as.data.frame(summary_table)
-df_st <- df_st  %>% dplyr::mutate_if(is.list, as.character)
+df_st <- df_st %>% dplyr::mutate_if(is.list, as.character)
 
-jpeg(file = paste0(outfolder,"/Zusammenfassung_Statistiken.jpeg"))
+png(file = paste0(outfolder, "/Zusammenfassung_Statistiken.png"))
 gridExtra::grid.table(df_st, rows = NULL)
 dev.off()
-
 ```
