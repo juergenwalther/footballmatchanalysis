@@ -17,27 +17,27 @@ summary_table <- function(pass, shots, shots_opp, pass_areas, own_area = 22, own
   n_ballswon_1 <- df_balls_won %>% filter(winx < own_area) %>% summarise(n())
   n_ballswon_2 <- df_balls_won %>% filter(winx < own_half) %>% summarise(n())
   n_ballswon_3 <- nrow(df_balls_won) - n_ballswon_2
-  n_pass_longline_r <- pass_areas$rvrm %>% dplyr::select(Zeit) %>% dplyr::distinct() %>% summarise(n())
-  n_pass_longline_l <- pass_areas$lvlm %>% dplyr::select(Zeit) %>% dplyr::distinct() %>% summarise(n())
-  n_pass_open_r <- pass_areas$rvm %>% dplyr::select(Zeit) %>% dplyr::distinct() %>% summarise(n())
-  n_pass_open_l <- pass_areas$lvm %>% dplyr::select(Zeit) %>% dplyr::distinct() %>% summarise(n())
-  n_pass_diago_r <- pass_areas$mrm %>% dplyr::select(Zeit) %>% dplyr::distinct() %>% summarise(n())
-  n_pass_diago_l <- pass_areas$mlm %>% dplyr::select(Zeit) %>% dplyr::distinct() %>% summarise(n())
+  vec_n_pass <- unlist(lapply(pass_areas, function(x) c(obtain_amount_passes(x, continued = FALSE),
+                                                        obtain_amount_passes(x, continued = TRUE))
+                              )
+  )
 
   result <- c(n_pass, n_pass_more10, n_pass_more20, n_shots, n_shots_inside_area, n_shots_outside_area,
               n_shots_opp, n_shots_opp_inside_area, n_shots_opp_outside_area,
               n_ballslost_1, n_ballslost_2, n_ballslost_3, n_ballswon_1, n_ballswon_2, n_ballswon_3,
-              n_pass_longline_r, n_pass_longline_l, n_pass_open_r, n_pass_open_l, n_pass_diago_r, n_pass_diago_l)
-  result
+              vec_n_pass)
 
   myrownames <- c("Pässe", "Passstafetten mit mehr als 10 Pässen","Passstafetten mit mehr als 20 Pässen",
                  "Schüsse", "Schüsse innerhalb des Strafraums", "Schüsse außerhalb des Strafraums",
                  "Schüsse des Gegners", "Schüsse des Gegners innerhalb des Strafraums", "Schüsse des Gegners außerhalb des Strafraums", "Ballverlust in und um eigenen Strafraum",
                  "Ballverlust in eigener Hälfte", "Ballverlust in gegnerischer Hälfte", "Ballgewinn in und um eigenen Strafraum",
                  "Ballgewinn in eigener Hälfte", "Ballgewinn in gegnerischer Hälfte",
-                 "Pässe von RV zu RM long line", "Pässe von LV zu LM long line",
-                 "Öffnendn Pässe von RV zu ZM", "Öffnende Pässe von LV zu ZM",
-                 "Lange Diagonalpässe von ZM auf RM", "Lange Diagonalpässe von ZM auf LM")
+                 "Öffnende Pässe von RV zu ZM", "Öffnende Pässe von RV zu ZM weitergeleitet",
+                 "Pässe von RV zu RM long line", "Pässe von RV zu RM long line weitergeleitet",
+                 "Öffnende Pässe von LV zu ZM", "Öffnende Pässe von LV zu ZM weitergeleitet",
+                 "Pässe von LV zu LM long line", "Pässe von LV zu LM long line weitergeleitet",
+                 "Lange Diagonalpässe von ZM auf RM", "Lange Diagonalpässe von ZM auf RM weitergeleitet",
+                 "Lange Diagonalpässe von ZM auf LM", "Lange Diagonalpässe von ZM auf LM weitergeleitet")
 
   df_res <- unname(cbind(myrownames, result))
   colnames(df_res) <- c("Parameter", "Anzahl")
