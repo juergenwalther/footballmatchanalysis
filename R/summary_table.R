@@ -1,4 +1,12 @@
-summary_table <- function(pass, shots, shots_opp, pass_areas, own_area = 22, own_half = 52.5, opponent_area = 105-16) {
+summary_table <- function(pass,
+                          shots,
+                          shots_opp,
+                          pass_areas,
+                          ecken,
+                          ecken_gegner,
+                          own_area = 22,
+                          own_half = 52.5,
+                          opponent_area = 105-16) {
   df_balls_lost <- balls_lost(pass)
   df_balls_won <- balls_won(pass)
 
@@ -25,7 +33,7 @@ summary_table <- function(pass, shots, shots_opp, pass_areas, own_area = 22, own
   result <- c(n_pass, n_pass_more10, n_pass_more20, n_shots, n_shots_inside_area, n_shots_outside_area,
               n_shots_opp, n_shots_opp_inside_area, n_shots_opp_outside_area,
               n_ballslost_1, n_ballslost_2, n_ballslost_3, n_ballswon_1, n_ballswon_2, n_ballswon_3,
-              vec_n_pass)
+              vec_n_pass, ecken, ecken_gegner)
 
   myrownames <- c("Pässe", "Passstafetten mit mehr als 10 Pässen","Passstafetten mit mehr als 20 Pässen",
                  "Schüsse", "Schüsse innerhalb des Strafraums", "Schüsse außerhalb des Strafraums",
@@ -37,7 +45,8 @@ summary_table <- function(pass, shots, shots_opp, pass_areas, own_area = 22, own
                  "Öffnende Pässe von LV zu ZM", "Öffnende Pässe von LV zu ZM weitergeleitet",
                  "Pässe von LV zu LM long line", "Pässe von LV zu LM long line weitergeleitet",
                  "Lange Diagonalpässe von ZM auf RM", "Lange Diagonalpässe von ZM auf RM weitergeleitet",
-                 "Lange Diagonalpässe von ZM auf LM", "Lange Diagonalpässe von ZM auf LM weitergeleitet")
+                 "Lange Diagonalpässe von ZM auf LM", "Lange Diagonalpässe von ZM auf LM weitergeleitet",
+                 "Ecken WFV", "Ecken Gegner")
 
   df_res <- unname(cbind(myrownames, result))
   colnames(df_res) <- c("Parameter", "Anzahl")
