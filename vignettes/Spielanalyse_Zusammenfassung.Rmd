@@ -266,13 +266,13 @@ plot_shots(df = shots_opp_tot, title = "Schüsse des Gegners", subtitle = paste0
 
 summary_table <- summary_table(pass = pass_tot, shots = shots_tot, shots_opp = shots_opp_tot, pass_areas = pass_areas_tot, ecken = ecken, ecken_gegner = ecken_gegner)
 print(summary_table)
-xlsx::write.xlsx(x = summary_table, file = paste0(outfolder, "/Zusammenfassung_Statistiken.xlsx"), row.names = FALSE)
+xlsx::write.xlsx(x = summary_table, file = paste0(outfolder, "/", spiel, "_Zusammenfassung_Statistiken.xlsx"), row.names = FALSE)
 
 
 df_st <- as.data.frame(summary_table)
 df_st <- df_st %>% dplyr::mutate_if(is.list, as.character)
 
-png(file = paste0(outfolder, "/Zusammenfassung_Statistiken.png"), height=600, width=400)
+png(file = paste0(outfolder, "/", spiel, "_Zusammenfassung_Statistiken.png"), height = 650, width = 400)
 gridExtra::grid.table(df_st, rows = NULL)
 dev.off()
 ```
