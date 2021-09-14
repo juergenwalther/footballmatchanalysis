@@ -25,6 +25,7 @@ library(cowplot)
 # Write files modules
 library(xlsx)
 library(gridExtra)
+library(grid)
 # Load footballmatchanalysis
 install.packages("C:/Users/Juergis/Documents/Fussball/Spielanalyse/Programm/Software/repo/footballmatchanalysis_0.1.0.tar.gz", repos = NULL, type = "source")
 library(footballmatchanalysis)
@@ -235,6 +236,9 @@ balls_won_tot <- merge_sequences(ls_balls_won)
 
 ```{r plot balls}
 # Get balls won and balls lost
+plot_all_sections(list_dfs = shots, n_sections = n_sections, title = "Ballgewinne", subtitle = paste0("Position der Ballgewinne in den Spielabschnitten "), outpath = outfolder_shots, filename = paste0("shots_combined"))
+
+
 for (i in 1:n_sections) {
   plot_balls(df = ls_balls_won[[i]], title = "Ballgewinne", subtitle = paste0("Position der Ballgewinne in Spielabschnitt ", i), outpath = outfolder_balls, filename = paste0("ballgewinne_", i))
   plot_balls(df = ls_balls_lost[[i]], title = "Ballverluste", subtitle = paste0("Position der Ballverluste in Spielabschnitt ", i), outpath = outfolder_balls, filename = paste0("ballverluste_", i))
