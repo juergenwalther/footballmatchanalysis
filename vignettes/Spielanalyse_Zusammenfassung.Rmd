@@ -48,6 +48,8 @@ plot_heatmaps_sections <- FALSE
 plot_heatmap <- TRUE
 plot_heatmap_discrete <- FALSE
 plot_raw_data <- FALSE
+plot_shots_individual <- FALSE
+plot_balls_wonlost_individual <- TRUE
 
 # Spielrichtung im realen Spiel
 spielrichtung_real <- c(rep("r", 3), rep("l", 3)) # Die Spielrichtung in der Analyse ist immer von links nach rechts, also "r". Bei anderer Spielrichtung wird das Feld gespiegelt.
@@ -236,14 +238,15 @@ balls_won_tot <- merge_sequences(ls_balls_won)
 
 ```{r plot balls}
 # Get balls won and balls lost
-plot_all_sections(list_dfs = shots, n_sections = n_sections, title = "Ballgewinne", subtitle = paste0("Position der Ballgewinne in den Spielabschnitten "), outpath = outfolder_shots, filename = paste0("shots_combined"))
 
 
+# Plot individually
 for (i in 1:n_sections) {
   plot_balls(df = ls_balls_won[[i]], title = "Ballgewinne", subtitle = paste0("Position der Ballgewinne in Spielabschnitt ", i), outpath = outfolder_balls, filename = paste0("ballgewinne_", i))
   plot_balls(df = ls_balls_lost[[i]], title = "Ballverluste", subtitle = paste0("Position der Ballverluste in Spielabschnitt ", i), outpath = outfolder_balls, filename = paste0("ballverluste_", i))
 }
 
+# Plot total balls won and lost
 plot_balls(df = balls_won_tot, title = "Ballgewinne", subtitle = paste0("Position der Ballgewinne im gesamten Spiel"), outpath = outfolder_balls, filename = paste0("ballgewinne_total"))
 plot_balls(df = balls_lost_tot, title = "Ballverluste", subtitle = paste0("Position der Ballverluste im gesamten Spiel"), outpath = outfolder_balls, filename = paste0("ballverluste_total"))
 ```
@@ -256,11 +259,20 @@ shots_opp_tot <- merge_sequences(shots_opp)
 
 
 ```{r plot shots}
+
+# Plot together
+plot_all_sections(list_dfs = shots, n_sections = n_sections, title = "Schüsse WFV", outpath = outfolder_shots, filename = paste0("schuesse_combined"), parameter = "shots", size_points = 2.5)
+plot_all_sections(list_dfs = shots_opp, n_sections = n_sections, title = "Schüsse Gegner", outpath = outfolder_shots, filename = paste0("schuesse_gegner_combined"), parameter = "shots", size_points = 2.5)
+
+# Plot individually
+if(isTRUE(plot_shots_individual)){
 for (i in 1:n_sections) {
   plot_shots(df = shots[[i]], title = "Schüsse", subtitle = paste0("Position der Schüsse in Spielabschnitt ", i), outpath = outfolder_shots, filename = paste0("schuesse_", i))
   plot_shots(df = shots_opp[[i]], title = "Schüsse des Gegners", subtitle = paste0("Position der Schüsse des Gegners in Spielabschnitt ", i), outpath = outfolder_shots, filename = paste0("schuesse_gegner_", i))
 }
+}
 
+# Plot total shots
 plot_shots(df = shots_tot, title = "Schüsse", subtitle = paste0("Position der Schüsse im gesamten Spiel"), outpath = outfolder_shots, filename = paste0("schuesse_total"))
 plot_shots(df = shots_opp_tot, title = "Schüsse des Gegners", subtitle = paste0("Position der Schüsse des Gegners im gesamten Spiel"), outpath = outfolder_shots, filename = paste0("schuesse_gegner_total"))
 ```

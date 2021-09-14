@@ -15,6 +15,8 @@
 plot_all_sections <- function(list_dfs,
                        spielrichtung = "r",
                        n_sections,
+                       parameter,
+                       size_points = 2,
                        title = "Schüsse",
                        subtitle = paste0("Position der Schüsse im gesamten Spiel"),
                        outpath,
@@ -22,29 +24,49 @@ plot_all_sections <- function(list_dfs,
 
   p <- list()
 
+  if(parameter == "shots"){
+
   for(i in 1:n_sections){
-
     df <- list_dfs[[i]]
-
     if (nrow(df) > 0) {
 
     p[[i]] <- soccerPitch(
         arrow = "none",
-      ) + geom_point(data = df, aes(x = x, y = y), size = 1.2)
-
-
+      ) + geom_point(data = df, aes(x = x, y = y), size = 2.5)
     } else {
       p[[i]] <- soccerPitch(
         arrow = "none",
       ) +
-        geom_point(data = data.frame(x = 52.5, y = 34, Zeit = 1), aes(x = x, y = y), size = 1.2)
+        geom_point(data = data.frame(x = 52.5, y = 34, Zeit = 1), aes(x = x, y = y), size = size_points)
     }
   }
+  } else if(parameter == "balls"){
+    for(i in 1:n_sections){
+      df <- list_dfs[[i]]
+      if (nrow(df) > 0) {
 
- p <- grid.arrange(p[[1]], p[[2]], p[[3]], p[[4]], p[[5]], p[[6]],
+        p[[i]] <- soccerPitch(
+          arrow = "none",
+        ) + geom_point(data = df, aes(x = winx, y = winy), size = 2.5)
+      } else {
+        p[[i]] <- soccerPitch(
+          arrow = "none",
+        ) +
+          geom_point(data = data.frame(x = 52.5, y = 34, Zeit = 1), aes(x = x, y = y), size = size_points)
+      }
+  }
+  }
+
+ p <- grid.arrange(arrangeGrob(p[[1]], top = "Spielabschnitt 1"),
+                   arrangeGrob(p[[2]], top = "Spielabschnitt 2"),
+                   arrangeGrob(p[[3]], top = "Spielabschnitt 3"),
+                   arrangeGrob(p[[4]], top = "Spielabschnitt 4"),
+                   arrangeGrob(p[[5]], top = "Spielabschnitt 5"),
+                   arrangeGrob(p[[6]], top = "Spielabschnitt 6"),
                    nrow = 3, ncol = 2,
-                   top = textGrob(title,gp=gpar(fontsize=20,font=3)))
+                   top = textGrob(title,gp=gpar(fontsize=25)))
 
-    ggsave(plot = p, filename = paste0(outpath, "/", filename, ".png"), width = 10, height = 9)
+
+    ggsave(plot = p, filename = paste0(outpath, "/", filename, ".png"), width = 12, height = 11)
 
 }
