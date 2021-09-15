@@ -38,7 +38,7 @@ library(footballmatchanalysis)
 path <- "C://Users/Juergis/Documents/Fussball/Spielanalyse/Programm/Videoanalyse/WFV"
 
 # Folder name of match analysis
-spiel <- "20200905_Seligenporten-WFV"
+spiel <- "20210905_Seligenporten-WFV"
 
 # Number of sections to divide match analysis
 n_sections <- 6
@@ -49,7 +49,7 @@ plot_heatmap <- TRUE
 plot_heatmap_discrete <- FALSE
 plot_raw_data <- FALSE
 plot_shots_individual <- FALSE
-plot_balls_wonlost_individual <- TRUE
+plot_balls_individual <- FALSE
 
 # Spielrichtung im realen Spiel
 spielrichtung_real <- c(rep("r", 3), rep("l", 3)) # Die Spielrichtung in der Analyse ist immer von links nach rechts, also "r". Bei anderer Spielrichtung wird das Feld gespiegelt.
@@ -136,7 +136,7 @@ plot_pass_heatmap(
   df = pass_tot,
   outpath = outfolder_pass,
   title_heatmap = "Heatmap der Pässe",
-  subtitle_heatmap = paste0("Gesamtes Spiel"),
+  subtitle_heatmap = paste0("Gesamtes Spiel: ",spiel),
   title_discrete = "Heatmap der Pässe",
   subtitle_discrete = paste0("Häufigkeit der Pässe im gesamten Spiel"),
   title_raw = "Passstafetten",
@@ -238,12 +238,17 @@ balls_won_tot <- merge_sequences(ls_balls_won)
 
 ```{r plot balls}
 # Get balls won and balls lost
+# Plot together
+plot_all_sections(list_dfs = ls_balls_won, n_sections = n_sections, title = paste0("Ballgewinne WFV - ",spiel), outpath = outfolder_balls, filename = paste0("ballgewinne_combined"), parameter = "balls", size_points = 2.5)
+plot_all_sections(list_dfs = ls_balls_lost, n_sections = n_sections, title = paste0("Ballverluste WFV - ",spiel), outpath = outfolder_balls, filename = paste0("ballverluste_combined"), parameter = "balls", size_points = 2.5)
 
 
 # Plot individually
+if(isTRUE(plot_balls_individual)){
 for (i in 1:n_sections) {
   plot_balls(df = ls_balls_won[[i]], title = "Ballgewinne", subtitle = paste0("Position der Ballgewinne in Spielabschnitt ", i), outpath = outfolder_balls, filename = paste0("ballgewinne_", i))
   plot_balls(df = ls_balls_lost[[i]], title = "Ballverluste", subtitle = paste0("Position der Ballverluste in Spielabschnitt ", i), outpath = outfolder_balls, filename = paste0("ballverluste_", i))
+}
 }
 
 # Plot total balls won and lost
@@ -261,8 +266,8 @@ shots_opp_tot <- merge_sequences(shots_opp)
 ```{r plot shots}
 
 # Plot together
-plot_all_sections(list_dfs = shots, n_sections = n_sections, title = "Schüsse WFV", outpath = outfolder_shots, filename = paste0("schuesse_combined"), parameter = "shots", size_points = 2.5)
-plot_all_sections(list_dfs = shots_opp, n_sections = n_sections, title = "Schüsse Gegner", outpath = outfolder_shots, filename = paste0("schuesse_gegner_combined"), parameter = "shots", size_points = 2.5)
+plot_all_sections(list_dfs = shots, n_sections = n_sections, title = paste0("Schüsse WFV - ",spiel), outpath = outfolder_shots, filename = paste0("schuesse_combined"), parameter = "shots", size_points = 2.5)
+plot_all_sections(list_dfs = shots_opp, n_sections = n_sections, title = paste0("Schüsse Gegner - ",spiel), outpath = outfolder_shots, filename = paste0("schuesse_gegner_combined"), parameter = "shots", size_points = 2.5)
 
 # Plot individually
 if(isTRUE(plot_shots_individual)){
