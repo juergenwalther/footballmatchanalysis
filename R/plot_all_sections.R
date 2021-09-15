@@ -32,12 +32,12 @@ plot_all_sections <- function(list_dfs,
 
     p[[i]] <- soccerPitch(
         arrow = "none",
-      ) + geom_point(data = df, aes(x = x, y = y), size = 2.5)
+      ) + geom_point(data = df, aes(x = x, y = y), size = size_points)
     } else {
       p[[i]] <- soccerPitch(
         arrow = "none",
       ) +
-        geom_point(data = data.frame(x = 52.5, y = 34, Zeit = 1), aes(x = x, y = y), size = size_points)
+        geom_point(data = data.frame(x = 52.5, y = 34, Zeit = 1), aes(x = x, y = y), size = 0.8)
     }
   }
   } else if(parameter == "balls"){
@@ -47,12 +47,12 @@ plot_all_sections <- function(list_dfs,
 
         p[[i]] <- soccerPitch(
           arrow = "none",
-        ) + geom_point(data = df, aes(x = winx, y = winy), size = 2.5)
+        ) + geom_point(data = df, aes(x = winx, y = winy), size = size_points)
       } else {
         p[[i]] <- soccerPitch(
           arrow = "none",
         ) +
-          geom_point(data = data.frame(x = 52.5, y = 34, Zeit = 1), aes(x = x, y = y), size = size_points)
+          geom_point(data = data.frame(x = 52.5, y = 34, Zeit = 1), aes(x = x, y = y), size = 0.8)
       }
   }
   }
