@@ -12,6 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r load packages, warning=FALSE,message=FALSE, echo=FALSE}
 # Main modules
+library(devtools)
 library(dplyr)
 library(ggplot2)
 library(data.table)
@@ -27,8 +28,9 @@ library(xlsx)
 library(gridExtra)
 library(grid)
 # Load footballmatchanalysis
-install.packages("C:/Users/Juergis/Documents/Fussball/Spielanalyse/Programm/Software/repo/footballmatchanalysis_0.1.0.tar.gz", repos = NULL, type = "source")
-library(footballmatchanalysis)
+# install.packages("C:/Users/Juergis/Documents/Fussball/Spielanalyse/Programm/Software/repo/footballmatchanalysis_0.1.0.tar.gz", repos = NULL, type = "source")
+# library(footballmatchanalysis)
+devtools::load_all()
 ```
 
 # Daten laden
@@ -38,7 +40,7 @@ library(footballmatchanalysis)
 path <- "C://Users/Juergis/Documents/Fussball/Spielanalyse/Programm/Videoanalyse/WFV"
 
 # Folder name of match analysis
-spiel <- "20210905_Seligenporten-WFV"
+spiel <- "20210910_WFV-Grossbardorf"
 
 # Number of sections to divide match analysis
 n_sections <- 6
@@ -52,7 +54,7 @@ plot_shots_individual <- FALSE
 plot_balls_individual <- FALSE
 
 # Spielrichtung im realen Spiel
-spielrichtung_real <- c(rep("r", 3), rep("l", 3)) # Die Spielrichtung in der Analyse ist immer von links nach rechts, also "r". Bei anderer Spielrichtung wird das Feld gespiegelt.
+spielrichtung_real <- c(rep("l", 3), rep("r", 3)) # Die Spielrichtung in der Analyse ist immer von links nach rechts, also "r". Bei anderer Spielrichtung wird das Feld gespiegelt.
 
 # Anzahl an Ecken manuelle hier eintragen. Die Werte werden in summary_table() ausgegeben
 ecken <- 4
@@ -136,7 +138,7 @@ plot_pass_heatmap(
   df = pass_tot,
   outpath = outfolder_pass,
   title_heatmap = "Heatmap der Pässe",
-  subtitle_heatmap = paste0("Gesamtes Spiel: ",spiel),
+  subtitle_heatmap = paste0("Gesamtes Spiel: ", spiel),
   title_discrete = "Heatmap der Pässe",
   subtitle_discrete = paste0("Häufigkeit der Pässe im gesamten Spiel"),
   title_raw = "Passstafetten",
@@ -239,16 +241,16 @@ balls_won_tot <- merge_sequences(ls_balls_won)
 ```{r plot balls}
 # Get balls won and balls lost
 # Plot together
-plot_all_sections(list_dfs = ls_balls_won, n_sections = n_sections, title = paste0("Ballgewinne WFV - ",spiel), outpath = outfolder_balls, filename = paste0("ballgewinne_combined"), parameter = "balls", size_points = 2.5)
-plot_all_sections(list_dfs = ls_balls_lost, n_sections = n_sections, title = paste0("Ballverluste WFV - ",spiel), outpath = outfolder_balls, filename = paste0("ballverluste_combined"), parameter = "balls", size_points = 2.5)
+plot_all_sections(list_dfs = ls_balls_won, n_sections = n_sections, title = paste0("Ballgewinne WFV - ", spiel), outpath = outfolder_balls, filename = paste0("ballgewinne_combined"), parameter = "balls", size_points = 2.5)
+plot_all_sections(list_dfs = ls_balls_lost, n_sections = n_sections, title = paste0("Ballverluste WFV - ", spiel), outpath = outfolder_balls, filename = paste0("ballverluste_combined"), parameter = "balls", size_points = 2.5)
 
 
 # Plot individually
-if(isTRUE(plot_balls_individual)){
-for (i in 1:n_sections) {
-  plot_balls(df = ls_balls_won[[i]], title = "Ballgewinne", subtitle = paste0("Position der Ballgewinne in Spielabschnitt ", i), outpath = outfolder_balls, filename = paste0("ballgewinne_", i))
-  plot_balls(df = ls_balls_lost[[i]], title = "Ballverluste", subtitle = paste0("Position der Ballverluste in Spielabschnitt ", i), outpath = outfolder_balls, filename = paste0("ballverluste_", i))
-}
+if (isTRUE(plot_balls_individual)) {
+  for (i in 1:n_sections) {
+    plot_balls(df = ls_balls_won[[i]], title = "Ballgewinne", subtitle = paste0("Position der Ballgewinne in Spielabschnitt ", i), outpath = outfolder_balls, filename = paste0("ballgewinne_", i))
+    plot_balls(df = ls_balls_lost[[i]], title = "Ballverluste", subtitle = paste0("Position der Ballverluste in Spielabschnitt ", i), outpath = outfolder_balls, filename = paste0("ballverluste_", i))
+  }
 }
 
 # Plot total balls won and lost
@@ -266,15 +268,15 @@ shots_opp_tot <- merge_sequences(shots_opp)
 ```{r plot shots}
 
 # Plot together
-plot_all_sections(list_dfs = shots, n_sections = n_sections, title = paste0("Schüsse WFV - ",spiel), outpath = outfolder_shots, filename = paste0("schuesse_combined"), parameter = "shots", size_points = 2.5)
-plot_all_sections(list_dfs = shots_opp, n_sections = n_sections, title = paste0("Schüsse Gegner - ",spiel), outpath = outfolder_shots, filename = paste0("schuesse_gegner_combined"), parameter = "shots", size_points = 2.5)
+plot_all_sections(list_dfs = shots, n_sections = n_sections, title = paste0("Schüsse WFV - ", spiel), outpath = outfolder_shots, filename = paste0("schuesse_combined"), parameter = "shots", size_points = 2.5)
+plot_all_sections(list_dfs = shots_opp, n_sections = n_sections, title = paste0("Schüsse Gegner - ", spiel), outpath = outfolder_shots, filename = paste0("schuesse_gegner_combined"), parameter = "shots", size_points = 2.5)
 
 # Plot individually
-if(isTRUE(plot_shots_individual)){
-for (i in 1:n_sections) {
-  plot_shots(df = shots[[i]], title = "Schüsse", subtitle = paste0("Position der Schüsse in Spielabschnitt ", i), outpath = outfolder_shots, filename = paste0("schuesse_", i))
-  plot_shots(df = shots_opp[[i]], title = "Schüsse des Gegners", subtitle = paste0("Position der Schüsse des Gegners in Spielabschnitt ", i), outpath = outfolder_shots, filename = paste0("schuesse_gegner_", i))
-}
+if (isTRUE(plot_shots_individual)) {
+  for (i in 1:n_sections) {
+    plot_shots(df = shots[[i]], title = "Schüsse", subtitle = paste0("Position der Schüsse in Spielabschnitt ", i), outpath = outfolder_shots, filename = paste0("schuesse_", i))
+    plot_shots(df = shots_opp[[i]], title = "Schüsse des Gegners", subtitle = paste0("Position der Schüsse des Gegners in Spielabschnitt ", i), outpath = outfolder_shots, filename = paste0("schuesse_gegner_", i))
+  }
 }
 
 # Plot total shots
@@ -288,6 +290,9 @@ plot_shots(df = shots_opp_tot, title = "Schüsse des Gegners", subtitle = paste0
 summary_table <- summary_table(pass = pass_tot, shots = shots_tot, shots_opp = shots_opp_tot, pass_areas = pass_areas_tot, ecken = ecken, ecken_gegner = ecken_gegner)
 print(summary_table)
 xlsx::write.xlsx(x = summary_table, file = paste0(outfolder, "/", spiel, "_Zusammenfassung_Statistiken.xlsx"), row.names = FALSE)
+# Save summary table as R object
+save(spiel, summary_table, file = paste0(outfolder, "/", spiel, ".Rdata"))
+
 
 
 df_st <- as.data.frame(summary_table)
