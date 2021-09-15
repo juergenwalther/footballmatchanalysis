@@ -288,10 +288,10 @@ plot_shots(df = shots_opp_tot, title = "Schüsse des Gegners", subtitle = paste0
 ```{r summary statistics}
 
 summary_table <- summary_table(pass = pass_tot, shots = shots_tot, shots_opp = shots_opp_tot, pass_areas = pass_areas_tot, ecken = ecken, ecken_gegner = ecken_gegner)
-print(summary_table)
+
 xlsx::write.xlsx(x = summary_table, file = paste0(outfolder, "/", spiel, "_Zusammenfassung_Statistiken.xlsx"), row.names = FALSE)
-# Save summary table as R object
-save(spiel, summary_table, file = paste0(outfolder, "/", spiel, ".Rdata"))
+# Save spiel, spielrichtung_real and summary table as R object
+save(spiel, spielrichtung_real, summary_table, file = paste0(path, "/Statistik/", spiel, ".Rdata"))
 
 
 
@@ -300,5 +300,31 @@ df_st <- df_st %>% dplyr::mutate_if(is.list, as.character)
 
 png(file = paste0(outfolder, "/", spiel, "_Zusammenfassung_Statistiken.png"), height = 650, width = 400)
 gridExtra::grid.table(df_st, rows = NULL)
+dev.off()
+```
+
+```{r combine summary statistics}
+
+stat_files <- list.files(path = paste0(path, "/Statistik/"), pattern = "*Rdata", full.names = TRUE)
+
+load(stat_files[1])
+st_load <- summary_table
+spiel_load <- spiel
+for (i in 2:length(stat_files)) {
+  load(stat_files[2])
+  st_load <- cbind(st_load, summary_table[, 2])
+  spiel_load <- c(spiel_load, spiel)
+}
+
+colnames(st_load) <- c("Parameter", spiel_load)
+
+# Save table
+xlsx::write.xlsx(x = st_load, file = paste0(path, "/Statistik/Zusammenfassung/Statistiken_kombiniert.xlsx"), row.names = FALSE)
+
+df_st_load <- as.data.frame(st_load)
+df_st_load <- df_st_load %>% dplyr::mutate_if(is.list, as.character)
+
+png(file = paste0(path, "/Statistik/Zusammenfassung/Statistiken_kombiniert.png"), height = 650, width = 800)
+gridExtra::grid.table(df_st_load, rows = NULL)
 dev.off()
 ```
