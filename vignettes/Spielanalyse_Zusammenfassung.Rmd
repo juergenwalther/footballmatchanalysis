@@ -317,14 +317,16 @@ for (i in 2:length(stat_files)) {
 }
 
 colnames(st_load) <- c("Parameter", spiel_load)
+# Im Seligenporten-Spiel wurden keine Ecken gezählt
+st_load[c(nrow(st_load) - 1, nrow(st_load)), 2] <- c(NA, NA)
 
 # Save table
-xlsx::write.xlsx(x = st_load, file = paste0(path, "/Statistik/Zusammenfassung/Statistiken_kombiniert.xlsx"), row.names = FALSE)
+xlsx::write.xlsx(x = st_load, file = paste0(path, "/Statistik/Zusammenfassung/", Sys.time(), "_Statistiken_kombiniert.xlsx"), row.names = FALSE)
 
 df_st_load <- as.data.frame(st_load)
 df_st_load <- df_st_load %>% dplyr::mutate_if(is.list, as.character)
 
-png(file = paste0(path, "/Statistik/Zusammenfassung/Statistiken_kombiniert.png"), height = 650, width = 800)
+png(file = paste0(path, "/Statistik/Zusammenfassung/", Sys.time(), "_Statistiken_kombiniert.png"), height = 650, width = 800)
 gridExtra::grid.table(df_st_load, rows = NULL)
 dev.off()
 ```
