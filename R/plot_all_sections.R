@@ -59,14 +59,14 @@ plot_all_sections <- function(list_dfs,
 
  p <- grid.arrange(arrangeGrob(p[[1]], top = "Spielabschnitt 1"),
                    arrangeGrob(p[[2]], top = "Spielabschnitt 2"),
-                   arrangeGrob(p[[3]], top = "Spielabschnitt 3"),
-                   arrangeGrob(p[[4]], top = "Spielabschnitt 4"),
-                   arrangeGrob(p[[5]], top = "Spielabschnitt 5"),
-                   arrangeGrob(p[[6]], top = "Spielabschnitt 6"),
-                   nrow = 3, ncol = 2,
+                   #arrangeGrob(p[[3]], top = "Spielabschnitt 3"),
+                   #arrangeGrob(p[[4]], top = "Spielabschnitt 4"),
+                   #arrangeGrob(p[[5]], top = "Spielabschnitt 5"),
+                   #arrangeGrob(p[[6]], top = "Spielabschnitt 6"),
+                   nrow = 1, ncol = 2,
                    top = textGrob(title,gp=gpar(fontsize=25)))
 
 
-    ggsave(plot = p, filename = paste0(outpath, "/", filename, ".png"), width = 12, height = 11)
+    ggsave(plot = p, filename = paste0(outpath, "/", filename, ".png"), width = 12, height = 4)
 
 }
