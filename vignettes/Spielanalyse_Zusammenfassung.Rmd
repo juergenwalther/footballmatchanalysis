@@ -45,6 +45,10 @@ spiel <- "20210910_WFV-Grossbardorf"
 # Number of sections to divide match analysis
 n_sections <- 6
 
+summarize_to_halfs <- TRUE
+n_halfs <- 2
+n_plot <- ifelse(summarize_to_halfs, n_halfs, n_sections)
+
 # Which plots do I want to plot?
 plot_heatmaps_sections <- FALSE
 plot_heatmap <- TRUE
@@ -70,6 +74,7 @@ all_data <- lapply(filenames, function(file) {
     num_sections = n_sections
   )
 })
+
 ```
 
 # Variablen definieren
@@ -100,9 +105,21 @@ all_data_norm_mirrored <- lapply(1:length(all_data), function(i) {
   })
 })
 
-pass <- all_data_norm_mirrored[[1]]
-shots <- all_data_norm_mirrored[[2]]
-shots_opp <- all_data_norm_mirrored[[3]]
+# summarize from number of analysed sections to halfs
+if (isTRUE(summarize_to_halfs) & n_sections > 2) {
+  all_data_norm_mirrored_sum <- lapply(all_data_norm_mirrored, function(x) {
+    list(
+      merge_sequences(list_sequence = x, n1 = 1, n2 = n_sections / 2),
+      merge_sequences(list_sequence = x, n1 = n_sections / 2 + 1, n2 = n_sections)
+    )
+  })
+} else {
+  all_data_norm_mirrored_sum <- all_data_norm_mirrored
+}
+
+pass <- all_data_norm_mirrored_sum[[1]]
+shots <- all_data_norm_mirrored_sum[[2]]
+shots_opp <- all_data_norm_mirrored_sum[[3]]
 ```
 
 
@@ -114,7 +131,7 @@ pass_tot <- merge_sequences(pass)
 
 ```{r plot passes}
 if (isTRUE(plot_heatmaps_sections)) {
-  for (i in 1:n_sections) {
+  for (i in 1:n_plot) {
     plot_pass_heatmap(
       df = pass[[i]],
       outpath = outfolder_pass,
@@ -151,6 +168,8 @@ plot_pass_heatmap(
   plot_rawdata = plot_raw_data
 )
 ```
+
+
 ```{r passes between areas}
 
 areas <- define_areas()
@@ -241,13 +260,13 @@ balls_won_tot <- merge_sequences(ls_balls_won)
 ```{r plot balls}
 # Get balls won and balls lost
 # Plot together
-plot_all_sections(list_dfs = ls_balls_won, n_sections = n_sections, title = paste0("Ballgewinne WFV - ", spiel), outpath = outfolder_balls, filename = paste0("ballgewinne_combined"), parameter = "balls", size_points = 2.5)
-plot_all_sections(list_dfs = ls_balls_lost, n_sections = n_sections, title = paste0("Ballverluste WFV - ", spiel), outpath = outfolder_balls, filename = paste0("ballverluste_combined"), parameter = "balls", size_points = 2.5)
+plot_all_sections(list_dfs = ls_balls_won, n_sections = n_plot, title = paste0("Ballgewinne WFV - ", spiel), outpath = outfolder_balls, filename = paste0("ballgewinne_combined"), parameter = "balls", size_points = 2.5)
+plot_all_sections(list_dfs = ls_balls_lost, n_sections = n_plot, title = paste0("Ballverluste WFV - ", spiel), outpath = outfolder_balls, filename = paste0("ballverluste_combined"), parameter = "balls", size_points = 2.5)
 
 
 # Plot individually
 if (isTRUE(plot_balls_individual)) {
-  for (i in 1:n_sections) {
+  for (i in 1:n_plot) {
     plot_balls(df = ls_balls_won[[i]], title = "Ballgewinne", subtitle = paste0("Position der Ballgewinne in Spielabschnitt ", i), outpath = outfolder_balls, filename = paste0("ballgewinne_", i))
     plot_balls(df = ls_balls_lost[[i]], title = "Ballverluste", subtitle = paste0("Position der Ballverluste in Spielabschnitt ", i), outpath = outfolder_balls, filename = paste0("ballverluste_", i))
   }
@@ -268,12 +287,12 @@ shots_opp_tot <- merge_sequences(shots_opp)
 ```{r plot shots}
 
 # Plot together
-plot_all_sections(list_dfs = shots, n_sections = n_sections, title = paste0("Schüsse WFV - ", spiel), outpath = outfolder_shots, filename = paste0("schuesse_combined"), parameter = "shots", size_points = 2.5)
-plot_all_sections(list_dfs = shots_opp, n_sections = n_sections, title = paste0("Schüsse Gegner - ", spiel), outpath = outfolder_shots, filename = paste0("schuesse_gegner_combined"), parameter = "shots", size_points = 2.5)
+plot_all_sections(list_dfs = shots, n_sections = n_plot, title = paste0("Schüsse WFV - ", spiel), outpath = outfolder_shots, filename = paste0("schuesse_combined"), parameter = "shots", size_points = 2.5)
+plot_all_sections(list_dfs = shots_opp, n_sections = n_plot, title = paste0("Schüsse Gegner - ", spiel), outpath = outfolder_shots, filename = paste0("schuesse_gegner_combined"), parameter = "shots", size_points = 2.5)
 
 # Plot individually
 if (isTRUE(plot_shots_individual)) {
-  for (i in 1:n_sections) {
+  for (i in 1:n_plot) {
     plot_shots(df = shots[[i]], title = "Schüsse", subtitle = paste0("Position der Schüsse in Spielabschnitt ", i), outpath = outfolder_shots, filename = paste0("schuesse_", i))
     plot_shots(df = shots_opp[[i]], title = "Schüsse des Gegners", subtitle = paste0("Position der Schüsse des Gegners in Spielabschnitt ", i), outpath = outfolder_shots, filename = paste0("schuesse_gegner_", i))
   }
