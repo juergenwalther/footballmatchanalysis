@@ -45,13 +45,17 @@ spiel <- "20210910_WFV-Grossbardorf"
 # Number of sections to divide match analysis
 n_sections <- 6
 
+summarize_to_halfs <- TRUE
+n_halfs <- 2
+n_plot <- ifelse(summarize_to_halfs, n_halfs, n_sections)
+
 # Which plots do I want to plot?
 plot_heatmaps_sections <- FALSE
 plot_heatmap <- TRUE
 plot_heatmap_discrete <- FALSE
 plot_raw_data <- FALSE
 plot_shots_individual <- FALSE
-plot_balls_individual <- FALSE
+plot_balls_individual <- TRUE
 
 # Spielrichtung im realen Spiel
 spielrichtung_real <- c(rep("l", 3), rep("r", 3)) # Die Spielrichtung in der Analyse ist immer von links nach rechts, also "r". Bei anderer Spielrichtung wird das Feld gespiegelt.
@@ -100,9 +104,21 @@ all_data_norm_mirrored <- lapply(1:length(all_data), function(i) {
   })
 })
 
-pass <- all_data_norm_mirrored[[1]]
-shots <- all_data_norm_mirrored[[2]]
-shots_opp <- all_data_norm_mirrored[[3]]
+# summarize from number of analysed sections to halfs
+if (isTRUE(summarize_to_halfs) & n_sections > 2) {
+  all_data_norm_mirrored_sum <- lapply(all_data_norm_mirrored, function(x) {
+    list(
+      merge_sequences(list_sequence = x, n1 = 1, n2 = n_sections / 2),
+      merge_sequences(list_sequence = x, n1 = n_sections / 2 + 1, n2 = n_sections)
+    )
+  })
+} else {
+  all_data_norm_mirrored_sum <- all_data_norm_mirrored
+}
+
+pass <- all_data_norm_mirrored_sum[[1]]
+shots <- all_data_norm_mirrored_sum[[2]]
+shots_opp <- all_data_norm_mirrored_sum[[3]]
 ```
 
 
@@ -112,9 +128,9 @@ shots_opp <- all_data_norm_mirrored[[3]]
 pass_tot <- merge_sequences(pass)
 ```
 
-```{r plot passes}
+```{r plot passes, warning=FALSE,message=FALSE, echo=FALSE}
 if (isTRUE(plot_heatmaps_sections)) {
-  for (i in 1:n_sections) {
+  for (i in 1:n_plot) {
     plot_pass_heatmap(
       df = pass[[i]],
       outpath = outfolder_pass,
@@ -151,29 +167,93 @@ plot_pass_heatmap(
   plot_rawdata = plot_raw_data
 )
 ```
-```{r passes between areas}
+
+
+```{r passes between areas, warning=FALSE,message=FALSE, echo=FALSE}
 
 areas <- define_areas()
 
+pass_areas <- lapply(pass, function(x) all_passes_areas(pass = x, areas = areas, additional_passes = TRUE))
 
-# Passes of defenders
-rvm <- do.call("rbind", lapply(1:(nrow(pass_tot) - 1), get_passes_between_areas, pass_tot, areas$rv, areas$m, additional_passes = TRUE))
-rvrm <- do.call("rbind", lapply(1:(nrow(pass_tot) - 1), get_passes_between_areas, pass_tot, areas$rv, areas$rm, additional_passes = TRUE))
-lvm <- do.call("rbind", lapply(1:(nrow(pass_tot) - 1), get_passes_between_areas, pass_tot, areas$lv, areas$m, additional_passes = TRUE))
-lvlm <- do.call("rbind", lapply(1:(nrow(pass_tot) - 1), get_passes_between_areas, pass_tot, areas$lv, areas$lm, additional_passes = TRUE))
-
-# Passes of midfield
-mrm <- do.call("rbind", lapply(1:(nrow(pass_tot) - 1), get_passes_between_areas, pass_tot, areas$m, areas$rm, additional_passes = TRUE))
-mlm <- do.call("rbind", lapply(1:(nrow(pass_tot) - 1), get_passes_between_areas, pass_tot, areas$m, areas$lm, additional_passes = TRUE))
-
-pass_areas_tot <- list(rvm = rvm, rvrm = rvrm, lvm = lvm, lvlm = lvlm, mrm = mrm, mlm = mlm)
+pass_areas_tot <- all_passes_areas(pass = pass_tot, areas = areas, additional_passes = TRUE)
 ```
 
 
-```{r plot passes between areas}
+```{r plot passes between areas, warning=FALSE,message=FALSE, echo=FALSE}
+
+# Plot passes between areas for all sections to be plotted
+
+for (i in 1:length(pass_areas))
+{
+  plot_passes_between_areas(
+    df = pass_areas[[i]]$rvm,
+    pos1 = areas$rv,
+    pos2 = areas$m,
+    title = "Pässe von Rechtsverteidiger zu zentralem Mittelfeld",
+    subtitle = paste0("Halbzeit ", i),
+    outpath = outfolder_tactics,
+    filename = paste0("rv_to_m_", i)
+  )
+
+
+  plot_passes_between_areas(
+    df = pass_areas[[i]]$rvrm,
+    pos1 = areas$rv,
+    pos2 = areas$rm,
+    title = "Pässe von Rechtsverteidiger zu rechter Außenbahn",
+    subtitle = paste0("Halbzeit ", i),
+    outpath = outfolder_tactics,
+    filename = paste0("rv_to_rm_", i)
+  )
+
+  plot_passes_between_areas(
+    df = pass_areas[[i]]$lvm,
+    pos1 = areas$lv,
+    pos2 = areas$m,
+    title = "Pässe von Linksverteidiger zu zentralem Mittelfeld",
+    subtitle = paste0("Halbzeit ", i),
+    outpath = outfolder_tactics,
+    filename = paste0("lv_to_m_", i)
+  )
+
+  plot_passes_between_areas(
+    df = pass_areas[[i]]$lvlm,
+    pos1 = areas$lv,
+    pos2 = areas$lm,
+    title = "Pässe von Linksverteidiger zu linker Außenbahn",
+    subtitle = paste0("Halbzeit ", i),
+    outpath = outfolder_tactics,
+    filename = paste0("lv_to_lm_", i)
+  )
+
+  plot_passes_between_areas(
+    df = pass_areas[[i]]$mlm,
+    pos1 = areas$m,
+    pos2 = areas$lm,
+    title = "Pässe von zentralem Mittelfeld zu linker Außenbahn",
+    subtitle = paste0("Halbzeit ", i),
+    outpath = outfolder_tactics,
+    filename = paste0("m_to_lm_", i)
+  )
+
+  plot_passes_between_areas(
+    df = pass_areas[[i]]$mrm,
+    pos1 = areas$m,
+    pos2 = areas$rm,
+    title = "Pässe von zentralem Mittelfeld zu rechter Außenbahn",
+    subtitle = paste0("Halbzeit ", i),
+    outpath = outfolder_tactics,
+    filename = paste0("m_to_rm_", i)
+  )
+}
+```
+
+```{r plot passes between areas total, warning=FALSE,message=FALSE, echo=FALSE}
+
+# Plot passes between areas for whole match
 
 plot_passes_between_areas(
-  df = rvm,
+  df = pass_areas_tot$rvm,
   pos1 = areas$rv,
   pos2 = areas$m,
   title = "Pässe von Rechtsverteidiger zu zentralem Mittelfeld",
@@ -181,8 +261,9 @@ plot_passes_between_areas(
   filename = "rv_to_m_total"
 )
 
+
 plot_passes_between_areas(
-  df = rvrm,
+  df = pass_areas_tot$rvrm,
   pos1 = areas$rv,
   pos2 = areas$rm,
   title = "Pässe von Rechtsverteidiger zu rechter Außenbahn",
@@ -191,7 +272,7 @@ plot_passes_between_areas(
 )
 
 plot_passes_between_areas(
-  df = lvm,
+  df = pass_areas_tot$lvm,
   pos1 = areas$lv,
   pos2 = areas$m,
   title = "Pässe von Linksverteidiger zu zentralem Mittelfeld",
@@ -200,7 +281,7 @@ plot_passes_between_areas(
 )
 
 plot_passes_between_areas(
-  df = lvlm,
+  df = pass_areas_tot$lvlm,
   pos1 = areas$lv,
   pos2 = areas$lm,
   title = "Pässe von Linksverteidiger zu linker Außenbahn",
@@ -209,7 +290,7 @@ plot_passes_between_areas(
 )
 
 plot_passes_between_areas(
-  df = mlm,
+  df = pass_areas_tot$mlm,
   pos1 = areas$m,
   pos2 = areas$lm,
   title = "Pässe von zentralem Mittelfeld zu linker Außenbahn",
@@ -218,7 +299,7 @@ plot_passes_between_areas(
 )
 
 plot_passes_between_areas(
-  df = mrm,
+  df = pass_areas_tot$mrm,
   pos1 = areas$m,
   pos2 = areas$rm,
   title = "Pässe von zentralem Mittelfeld zu rechter Außenbahn",
@@ -227,7 +308,8 @@ plot_passes_between_areas(
 )
 ```
 
-```{r calculate balls won and lost}
+
+```{r calculate balls won and lost, warning=FALSE,message=FALSE, echo=FALSE}
 ls_balls_lost <- lapply(pass, balls_lost)
 ls_balls_won <- lapply(pass, balls_won)
 
@@ -238,16 +320,16 @@ balls_won_tot <- merge_sequences(ls_balls_won)
 
 
 
-```{r plot balls}
+```{r plot balls, warning=FALSE,message=FALSE, echo=FALSE}
 # Get balls won and balls lost
 # Plot together
-plot_all_sections(list_dfs = ls_balls_won, n_sections = n_sections, title = paste0("Ballgewinne WFV - ", spiel), outpath = outfolder_balls, filename = paste0("ballgewinne_combined"), parameter = "balls", size_points = 2.5)
-plot_all_sections(list_dfs = ls_balls_lost, n_sections = n_sections, title = paste0("Ballverluste WFV - ", spiel), outpath = outfolder_balls, filename = paste0("ballverluste_combined"), parameter = "balls", size_points = 2.5)
+plot_all_sections(list_dfs = ls_balls_won, n_sections = n_plot, title = paste0("Ballgewinne WFV - ", spiel), outpath = outfolder_balls, filename = paste0("ballgewinne_combined"), parameter = "balls", size_points = 2.5)
+plot_all_sections(list_dfs = ls_balls_lost, n_sections = n_plot, title = paste0("Ballverluste WFV - ", spiel), outpath = outfolder_balls, filename = paste0("ballverluste_combined"), parameter = "balls", size_points = 2.5)
 
 
 # Plot individually
 if (isTRUE(plot_balls_individual)) {
-  for (i in 1:n_sections) {
+  for (i in 1:n_plot) {
     plot_balls(df = ls_balls_won[[i]], title = "Ballgewinne", subtitle = paste0("Position der Ballgewinne in Spielabschnitt ", i), outpath = outfolder_balls, filename = paste0("ballgewinne_", i))
     plot_balls(df = ls_balls_lost[[i]], title = "Ballverluste", subtitle = paste0("Position der Ballverluste in Spielabschnitt ", i), outpath = outfolder_balls, filename = paste0("ballverluste_", i))
   }
@@ -258,22 +340,22 @@ plot_balls(df = balls_won_tot, title = "Ballgewinne", subtitle = paste0("Positio
 plot_balls(df = balls_lost_tot, title = "Ballverluste", subtitle = paste0("Position der Ballverluste im gesamten Spiel"), outpath = outfolder_balls, filename = paste0("ballverluste_total"))
 ```
 
-```{r calculate shots}
+```{r calculate shots, warning=FALSE,message=FALSE, echo=FALSE}
 # Get total balls won and total balls lost
 shots_tot <- merge_sequences(shots)
 shots_opp_tot <- merge_sequences(shots_opp)
 ```
 
 
-```{r plot shots}
+```{r plot shots, warning=FALSE,message=FALSE, echo=FALSE}
 
 # Plot together
-plot_all_sections(list_dfs = shots, n_sections = n_sections, title = paste0("Schüsse WFV - ", spiel), outpath = outfolder_shots, filename = paste0("schuesse_combined"), parameter = "shots", size_points = 2.5)
-plot_all_sections(list_dfs = shots_opp, n_sections = n_sections, title = paste0("Schüsse Gegner - ", spiel), outpath = outfolder_shots, filename = paste0("schuesse_gegner_combined"), parameter = "shots", size_points = 2.5)
+plot_all_sections(list_dfs = shots, n_sections = n_plot, title = paste0("Schüsse WFV - ", spiel), outpath = outfolder_shots, filename = paste0("schuesse_combined"), parameter = "shots", size_points = 2.5)
+plot_all_sections(list_dfs = shots_opp, n_sections = n_plot, title = paste0("Schüsse Gegner - ", spiel), outpath = outfolder_shots, filename = paste0("schuesse_gegner_combined"), parameter = "shots", size_points = 2.5)
 
 # Plot individually
 if (isTRUE(plot_shots_individual)) {
-  for (i in 1:n_sections) {
+  for (i in 1:n_plot) {
     plot_shots(df = shots[[i]], title = "Schüsse", subtitle = paste0("Position der Schüsse in Spielabschnitt ", i), outpath = outfolder_shots, filename = paste0("schuesse_", i))
     plot_shots(df = shots_opp[[i]], title = "Schüsse des Gegners", subtitle = paste0("Position der Schüsse des Gegners in Spielabschnitt ", i), outpath = outfolder_shots, filename = paste0("schuesse_gegner_", i))
   }
@@ -285,7 +367,7 @@ plot_shots(df = shots_opp_tot, title = "Schüsse des Gegners", subtitle = paste0
 ```
 
 
-```{r summary statistics}
+```{r summary statistics, warning=FALSE,message=FALSE, echo=FALSE}
 
 summary_table <- summary_table(pass = pass_tot, shots = shots_tot, shots_opp = shots_opp_tot, pass_areas = pass_areas_tot, ecken = ecken, ecken_gegner = ecken_gegner)
 
@@ -303,7 +385,7 @@ gridExtra::grid.table(df_st, rows = NULL)
 dev.off()
 ```
 
-```{r combine summary statistics}
+```{r combine summary statistics, warning=FALSE,message=FALSE, echo=FALSE}
 
 stat_files <- list.files(path = paste0(path, "/Statistik/"), pattern = "*Rdata", full.names = TRUE)
 
@@ -321,12 +403,12 @@ colnames(st_load) <- c("Parameter", spiel_load)
 st_load[c(nrow(st_load) - 1, nrow(st_load)), 2] <- c(NA, NA)
 
 # Save table
-xlsx::write.xlsx(x = st_load, file = paste0(path, "/Statistik/Zusammenfassung/", Sys.time(), "_Statistiken_kombiniert.xlsx"), row.names = FALSE)
+xlsx::write.xlsx(x = st_load, file = paste0(path, "/Statistik/Zusammenfassung/", Sys.Date(), "_Statistiken_kombiniert.xlsx"), row.names = FALSE)
 
 df_st_load <- as.data.frame(st_load)
 df_st_load <- df_st_load %>% dplyr::mutate_if(is.list, as.character)
 
-png(file = paste0(path, "/Statistik/Zusammenfassung/", Sys.time(), "_Statistiken_kombiniert.png"), height = 650, width = 800)
+png(file = paste0(path, "/Statistik/Zusammenfassung/", Sys.Date(), "_Statistiken_kombiniert.png"), height = 650, width = 800)
 gridExtra::grid.table(df_st_load, rows = NULL)
 dev.off()
 ```
