@@ -40,7 +40,7 @@ devtools::load_all()
 path <- "C://Users/Juergis/Documents/Fussball/Spielanalyse/Programm/Videoanalyse/WFV"
 
 # Folder name of match analysis
-spiel <- "20210910_WFV-Grossbardorf"
+spiel <- "20210918_Abtswind-WFV"
 
 # Number of sections to divide match analysis
 n_sections <- 6
@@ -55,14 +55,14 @@ plot_heatmap <- TRUE
 plot_heatmap_discrete <- FALSE
 plot_raw_data <- FALSE
 plot_shots_individual <- FALSE
-plot_balls_individual <- TRUE
+plot_balls_individual <- FALSE
 
 # Spielrichtung im realen Spiel
-spielrichtung_real <- c(rep("l", 3), rep("r", 3)) # Die Spielrichtung in der Analyse ist immer von links nach rechts, also "r". Bei anderer Spielrichtung wird das Feld gespiegelt.
+spielrichtung_real <- c(rep("r", 3), rep("l", 3)) # Die Spielrichtung in der Analyse ist immer von links nach rechts, also "r". Bei anderer Spielrichtung wird das Feld gespiegelt.
 
 # Anzahl an Ecken manuelle hier eintragen. Die Werte werden in summary_table() ausgegeben
-ecken <- 4
-ecken_gegner <- 6
+ecken <- 2
+ecken_gegner <- 4
 
 filenames <- c("paesse", "schuesse", "schuesse_gegner")
 
@@ -330,8 +330,8 @@ plot_all_sections(list_dfs = ls_balls_lost, n_sections = n_plot, title = paste0(
 # Plot individually
 if (isTRUE(plot_balls_individual)) {
   for (i in 1:n_plot) {
-    plot_balls(df = ls_balls_won[[i]], title = "Ballgewinne", subtitle = paste0("Position der Ballgewinne in Spielabschnitt ", i), outpath = outfolder_balls, filename = paste0("ballgewinne_", i))
-    plot_balls(df = ls_balls_lost[[i]], title = "Ballverluste", subtitle = paste0("Position der Ballverluste in Spielabschnitt ", i), outpath = outfolder_balls, filename = paste0("ballverluste_", i))
+    plot_balls(df = ls_balls_won[[i]], title = "Ballgewinne", subtitle = paste0("Position der Ballgewinne in Halbzeit ", i), outpath = outfolder_balls, filename = paste0("ballgewinne_", i))
+    plot_balls(df = ls_balls_lost[[i]], title = "Ballverluste", subtitle = paste0("Position der Ballverluste in Halbzeit ", i), outpath = outfolder_balls, filename = paste0("ballverluste_", i))
   }
 }
 
@@ -382,33 +382,5 @@ df_st <- df_st %>% dplyr::mutate_if(is.list, as.character)
 
 png(file = paste0(outfolder, "/", spiel, "_Zusammenfassung_Statistiken.png"), height = 650, width = 400)
 gridExtra::grid.table(df_st, rows = NULL)
-dev.off()
-```
-
-```{r combine summary statistics, warning=FALSE,message=FALSE, echo=FALSE}
-
-stat_files <- list.files(path = paste0(path, "/Statistik/"), pattern = "*Rdata", full.names = TRUE)
-
-load(stat_files[1])
-st_load <- summary_table
-spiel_load <- spiel
-for (i in 2:length(stat_files)) {
-  load(stat_files[2])
-  st_load <- cbind(st_load, summary_table[, 2])
-  spiel_load <- c(spiel_load, spiel)
-}
-
-colnames(st_load) <- c("Parameter", spiel_load)
-# Im Seligenporten-Spiel wurden keine Ecken gezählt
-st_load[c(nrow(st_load) - 1, nrow(st_load)), 2] <- c(NA, NA)
-
-# Save table
-xlsx::write.xlsx(x = st_load, file = paste0(path, "/Statistik/Zusammenfassung/", Sys.Date(), "_Statistiken_kombiniert.xlsx"), row.names = FALSE)
-
-df_st_load <- as.data.frame(st_load)
-df_st_load <- df_st_load %>% dplyr::mutate_if(is.list, as.character)
-
-png(file = paste0(path, "/Statistik/Zusammenfassung/", Sys.Date(), "_Statistiken_kombiniert.png"), height = 650, width = 800)
-gridExtra::grid.table(df_st_load, rows = NULL)
 dev.off()
 ```
