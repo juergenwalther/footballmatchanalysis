@@ -22,7 +22,19 @@ plot_balls <- function(df,
     title = title,
     subtitle = subtitle
   ) +
-    geom_point(data = df, aes(x = winx, y = winy, color = Zeit), size = 3)
+    geom_point(data = df, aes(x = winx,
+                              y = winy,
+                              color = Zeit
+                              #colour = cut(
+                                #Zeit, c(-Inf, 299, 499, 699, Inf))
+                                #Zeit, c(-Inf, 399, Inf))
+                              ),
+               size = 3)
+#scale_color_manual(name = "Zeit",
+                   # values = c("(-Inf,399]" = "black",
+                   #            "(399, Inf]" = "green"),
+                   # labels = c("1", "2")
+                   #)
 
 
   ggsave(file = paste0(outpath, "/", filename, ".png"))

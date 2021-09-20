@@ -57,8 +57,8 @@ plot_all_sections <- function(list_dfs,
   }
   }
 
- p <- grid.arrange(arrangeGrob(p[[1]], top = "Spielabschnitt 1"),
-                   arrangeGrob(p[[2]], top = "Spielabschnitt 2"),
+ p <- grid.arrange(arrangeGrob(p[[1]], top = "Halbzeit 1"),
+                   arrangeGrob(p[[2]], top = "Halbzeit 2"),
                    #arrangeGrob(p[[3]], top = "Spielabschnitt 3"),
                    #arrangeGrob(p[[4]], top = "Spielabschnitt 4"),
                    #arrangeGrob(p[[5]], top = "Spielabschnitt 5"),
