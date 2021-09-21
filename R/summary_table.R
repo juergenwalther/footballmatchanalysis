@@ -10,7 +10,7 @@ summary_table <- function(pass,
   df_balls_lost <- balls_lost(pass)
   df_balls_won <- balls_won(pass)
 
-  n_pass <- nrow(pass)
+  n_pass <- get_all_passes_completed(pass)
   n_pass_more10 <- get_pass_sequences(pass_tot, n = 10) %>% ungroup() %>% dplyr::select(Zeit) %>% dplyr::distinct() %>% summarise(n())
   n_pass_more20 <- get_pass_sequences(pass_tot, n = 20) %>% ungroup() %>% dplyr::select(Zeit) %>% dplyr::distinct() %>% summarise(n())
   n_shots <- nrow(shots)

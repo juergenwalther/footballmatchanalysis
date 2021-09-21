@@ -347,6 +347,14 @@ shots_opp_tot <- merge_sequences(shots_opp)
 ```
 
 
+```{r calculate passes in areas, warning=FALSE,message=FALSE, echo=FALSE}
+
+
+
+```
+
+
+
 ```{r plot shots, warning=FALSE,message=FALSE, echo=FALSE}
 
 # Plot together
