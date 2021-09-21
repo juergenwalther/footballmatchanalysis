@@ -11,7 +11,6 @@
 #'
 #' @examples
 get_passes_completed_areas <- function(pass_tot, area1 = 35, area2 = 70, area3 = 105) {
-  n_total <- get_all_passes_completed(pass_tot)
 
   pass_areas_completed <- pass_tot %>%
     mutate(area = ifelse(x < area1, 1, ifelse(x < area2, 2, 3))) %>%

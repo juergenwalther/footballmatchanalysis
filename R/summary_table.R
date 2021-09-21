@@ -10,9 +10,12 @@ summary_table <- function(pass,
   df_balls_lost <- balls_lost(pass)
   df_balls_won <- balls_won(pass)
 
-  n_pass <- get_all_passes_completed(pass)
+  #n_pass <- get_all_passes_completed(pass)
+  n_pass <- nrow(pass)
   n_pass_more10 <- get_pass_sequences(pass_tot, n = 10) %>% ungroup() %>% dplyr::select(Zeit) %>% dplyr::distinct() %>% summarise(n())
   n_pass_more20 <- get_pass_sequences(pass_tot, n = 20) %>% ungroup() %>% dplyr::select(Zeit) %>% dplyr::distinct() %>% summarise(n())
+  n_pass_area <- round(get_passes_completed_areas(pass)$perc, 2)
+  n_pass_area_all <- round(get_passes_completed_areas(pass)$all_perc[1], 2)
   n_shots <- nrow(shots)
   n_shots_inside_area <- shots %>% filter(x > opponent_area) %>% summarise(n())
   n_shots_outside_area <- n_shots - n_shots_inside_area
@@ -30,12 +33,15 @@ summary_table <- function(pass,
                               )
   )
 
-  result <- c(n_pass, n_pass_more10, n_pass_more20, n_shots, n_shots_inside_area, n_shots_outside_area,
+  result <- c(n_pass, n_pass_more10, n_pass_more20, n_pass_area_all, n_pass_area,
+              n_shots, n_shots_inside_area, n_shots_outside_area,
               n_shots_opp, n_shots_opp_inside_area, n_shots_opp_outside_area,
               n_ballslost_1, n_ballslost_2, n_ballslost_3, n_ballswon_1, n_ballswon_2, n_ballswon_3,
               vec_n_pass, ecken, ecken_gegner)
 
   myrownames <- c("Pässe", "Passstafetten mit mehr als 10 Pässen","Passstafetten mit mehr als 20 Pässen",
+                  "Anteil angekommene Pässe ganzes Spielfeld",
+                  "Anteil angekommene Pässe defensives Drittel", "Anteil angekommene Pässe mittleres Drittel", "Anteil angekommene Pässe offensives Drittel",
                  "Schüsse", "Schüsse innerhalb des Strafraums", "Schüsse außerhalb des Strafraums",
                  "Schüsse des Gegners", "Schüsse des Gegners innerhalb des Strafraums", "Schüsse des Gegners außerhalb des Strafraums", "Ballverlust in und um eigenen Strafraum",
                  "Ballverlust in eigener Hälfte", "Ballverlust in gegnerischer Hälfte", "Ballgewinn in und um eigenen Strafraum",
