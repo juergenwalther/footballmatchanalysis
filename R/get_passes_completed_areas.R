@@ -22,7 +22,7 @@ get_passes_completed_areas <- function(pass_tot, area1 = 35, area2 = 70, area3 =
     group_by(area) %>%
     slice(1) %>%
     ungroup() %>%
-    select(area, completed)
+    dplyr::select(area, completed)
 
   pass_areas_total <- pass_tot %>%
     mutate(area = ifelse(x < area1, 1, ifelse(x < area2, 2, 3))) %>%
@@ -34,7 +34,7 @@ get_passes_completed_areas <- function(pass_tot, area1 = 35, area2 = 70, area3 =
     group_by(area) %>%
     slice(1) %>%
     ungroup() %>%
-    select(area, total)
+    dplyr::select(area, total)
 
   out <- inner_join(pass_areas_completed, pass_areas_total)
   out <- out %>% mutate(perc = completed/total,
