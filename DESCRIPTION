@@ -1,11 +1,40 @@
 Package: footballmatchanalysis
 Type: Package
-Title: What the Package Does (Title Case)
-Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Title: A package for analysing pass data extracted from football match video analysis
+Version: 0.2.0
+Authors@R: 
+        person(given = "Jürgen",
+               family = "Walther",
+               role = c("aut", "cre"),
+               email = "juergen.walther1@gmail.com")
+Maintainer: juergen.walther1@gmail.com
+Description: 
+    A package for providing a framework of analyzing raw pass data extracted from
+    football match video. The pass data needs to be acquired using Paths in the 
+    freely available GIMP2 software and exported via the Path2CSV function. The 
+    csv files are the basis for a variety of analysis here in this package. The
+    palette of analysis ranges from pass heatmaps, passes between areas, shots,
+    analysis of position of lost and won balls as well as a summary table 
+    with important key parameters.
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
+Suggests:
+    knitr,
+    rmarkdown
+Imports:
+    devtools,
+    dplyr,
+    ggplot2,
+    data.table,
+    tidyr,
+    pracma,
+    MASS,
+    ggforce,
+    cowplot,
+    xlsx,
+    gridExtra,
+    grid
+VignetteBuilder: knitr
+BugReports: https://github.com/juergenwalther/footballmatchanalysis/issues
+
