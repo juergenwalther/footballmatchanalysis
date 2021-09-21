@@ -347,6 +347,7 @@ shots_opp_tot <- merge_sequences(shots_opp)
 ```
 
 
+
 ```{r plot shots, warning=FALSE,message=FALSE, echo=FALSE}
 
 # Plot together
@@ -380,7 +381,7 @@ save(spiel, spielrichtung_real, summary_table, file = paste0(path, "/Statistik/"
 df_st <- as.data.frame(summary_table)
 df_st <- df_st %>% dplyr::mutate_if(is.list, as.character)
 
-png(file = paste0(outfolder, "/", spiel, "_Zusammenfassung_Statistiken.png"), height = 650, width = 400)
+png(file = paste0(outfolder, "/", spiel, "_Zusammenfassung_Statistiken.png"), height = 750, width = 400)
 gridExtra::grid.table(df_st, rows = NULL)
 dev.off()
 ```
