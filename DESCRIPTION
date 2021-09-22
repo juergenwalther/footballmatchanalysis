@@ -7,7 +7,6 @@ Authors@R:
                family = "Walther",
                role = c("aut", "cre"),
                email = "juergen.walther1@gmail.com")
-Maintainer: juergen.walther1@gmail.com
 Description: 
     A package for providing a framework of analyzing raw pass data extracted from
     football match video. The pass data needs to be acquired using Paths in the 
