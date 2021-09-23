@@ -10,7 +10,7 @@
 #' @export
 #'
 #' @examples
-plot_won_space <- function(pass, histogram = FALSE, outpath, filename) {
+plot_won_space <- function(pass, histogram = FALSE, subtitle = "Gesamtes Spiel", outpath, filename) {
   if (histogram == FALSE) {
     # Basic scatter plot
     ggplot(pass, aes(x = space_won, y = total, color = as.factor(area))) +
@@ -22,6 +22,7 @@ plot_won_space <- function(pass, histogram = FALSE, outpath, filename) {
       ylim(0, 15) +
       labs(
         title = "Raumgewinn vs Anzahl der Pässe in Stafette",
+        subtitle = subtitle,
         x = "Raumgewinn (in % von Spielfeldlänge)",
         y = "Anzahl Pässe in Stafette"
       ) +
@@ -35,13 +36,14 @@ plot_won_space <- function(pass, histogram = FALSE, outpath, filename) {
     ggsave(file = paste0(outpath, "/", filename, ".png"))
   }
   else {
-    ggplot(pass, aes(x = space_won, y=..count../sum(..count..), fill = as.factor(area))) +
+    ggplot(pass, aes(x = space_won, y = stat(ncount / sum(ncount)), fill = as.factor(area))) +
       #geom_bar(aes(y = (..count..)/sum(..count..)), breaks = c(-75,-50,-25,0,25,50,75,100), color = "black", fill = "blue") +
       #scale_y_continuous(formatter = 'percent') +
       geom_histogram(breaks = c(-75,-50,-25,0,25,50,75,100)) +
       theme_minimal() +
       labs(
         title = "Raumgewinn im Histogram",
+        subtitle = subtitle,
         x = "Raumgewinn (in % von Spielfeldlänge)",
         y = "Anteil Passstafetten an Gesamtzahl von Passstafetten"
       ) +

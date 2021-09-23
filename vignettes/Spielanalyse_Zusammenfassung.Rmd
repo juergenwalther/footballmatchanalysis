@@ -40,7 +40,7 @@ devtools::load_all()
 path <- "C://Users/Juergis/Documents/Fussball/Spielanalyse/Programm/Videoanalyse/WFV"
 
 # Folder name of match analysis
-spiel <- "20210910_WFV-Grossbardorf"
+spiel <- "20210918_Abtswind-WFV"
 
 # Number of sections to divide match analysis
 n_sections <- 6
@@ -58,7 +58,7 @@ plot_shots_individual <- FALSE
 plot_balls_individual <- FALSE
 
 # Spielrichtung im realen Spiel
-spielrichtung_real <- c(rep("l", 3), rep("r", 3)) # Die Spielrichtung in der Analyse ist immer von links nach rechts, also "r". Bei anderer Spielrichtung wird das Feld gespiegelt.
+spielrichtung_real <- c(rep("r", 3), rep("l", 3)) # Die Spielrichtung in der Analyse ist immer von links nach rechts, also "r". Bei anderer Spielrichtung wird das Feld gespiegelt.
 
 # Anzahl an Ecken manuelle hier eintragen. Die Werte werden in summary_table() ausgegeben
 ecken <- 2
@@ -175,12 +175,14 @@ pass_space_won_tot <- get_won_space_pass_sequence(pass_tot)
 plot_won_space(
   pass = pass_space_won_tot,
   histogram = FALSE,
+  subtitle = "Gesamtes Spiel",
   outpath = outfolder_pass,
   filename = "Raumgewinn_vs_Anzahl_Paesse_total"
 )
 plot_won_space(
   pass = pass_space_won_tot,
   histogram = TRUE,
+  subtitle = "Gesamtes Spiel",
   outpath = outfolder_pass,
   filename = "Histogramm_Raumgewinn_total"
 )
@@ -190,12 +192,14 @@ pass_space_won <- lapply(pass, get_won_space_pass_sequence)
 for (i in 1:length(pass_space_won)) {
   plot_won_space(
     pass = pass_space_won[[i]],
+    subtitle = paste0("Halbzeit ",i),
     outpath = outfolder_pass,
     filename = paste0("Raumgewinn_vs_Anzahl_Paesse_", i)
   )
   plot_won_space(
     pass = pass_space_won[[i]],
     histogram = TRUE,
+    subtitle = paste0("Halbzeit ",i),
     outpath = outfolder_pass,
     filename = paste0("Histogramm_Raumgewinn_", i)
   )
