@@ -1,11 +1,11 @@
 #' Get completed and total passes in different areas of pitch
 #'
-#' @param pass_tot
+#' @param pass_tot data.frame with pass sequences
 #' @param area1 integer. Set to 35 (defensive third)
 #' @param area2 integer. Set to 70 (middle third)
 #' @param area3 integer. Set to 105 (offensive third)
 #'
-#' @return data.frame with completed, total passes in all threeareas
+#' @return data.frame with completed, total passes in all three areas
 #'  as well as percentage of completion for each area (perc) and total (all_perc)
 #' @export
 #'
