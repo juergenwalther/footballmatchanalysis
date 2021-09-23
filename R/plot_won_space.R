@@ -1,3 +1,15 @@
+#' Plot won space either as histogram or as scatter plot
+#'
+#' @param pass input data.frame. must contain columns with names Zeit,x,y,total,area, space_won.
+#' This can be obtained from \code{link{get_won_space_pass_sequence()}}
+#' @param histogram boolean. Plots histogram if TRUE, otherwise plots scatter plot
+#' @param outpath character string. Output path of image
+#' @param filename character string. Output file name
+#'
+#' @return no return object. plot is saved
+#' @export
+#'
+#' @examples
 plot_won_space <- function(pass, histogram = FALSE, outpath, filename) {
   if (histogram == FALSE) {
     # Basic scatter plot
