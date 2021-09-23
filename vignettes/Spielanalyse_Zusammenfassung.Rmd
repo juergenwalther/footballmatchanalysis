@@ -172,8 +172,34 @@ plot_pass_heatmap(
 
 pass_space_won_tot <- get_won_space_pass_sequence(pass_tot)
 
-plot_won_space(pass = pass_space_won_tot, outpath = outfolder_pass, filename = "Raumgewinn_vs_Anzahl_Paesse")
-plot_won_space(pass = pass_space_won_tot, histogram = TRUE, outpath = outfolder_pass, filename = "Histogramm_Raumgewinn")
+plot_won_space(
+  pass = pass_space_won_tot,
+  histogram = FALSE,
+  outpath = outfolder_pass,
+  filename = "Raumgewinn_vs_Anzahl_Paesse_total"
+)
+plot_won_space(
+  pass = pass_space_won_tot,
+  histogram = TRUE,
+  outpath = outfolder_pass,
+  filename = "Histogramm_Raumgewinn_total"
+)
+
+pass_space_won <- lapply(pass, get_won_space_pass_sequence)
+
+for (i in 1:length(pass_space_won)) {
+  plot_won_space(
+    pass = pass_space_won[[i]],
+    outpath = outfolder_pass,
+    filename = paste0("Raumgewinn_vs_Anzahl_Paesse_", i)
+  )
+  plot_won_space(
+    pass = pass_space_won[[i]],
+    histogram = TRUE,
+    outpath = outfolder_pass,
+    filename = paste0("Histogramm_Raumgewinn_", i)
+  )
+}
 
 ```
 
