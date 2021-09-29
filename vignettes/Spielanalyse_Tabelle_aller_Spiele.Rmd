@@ -44,7 +44,7 @@ xlsx::write.xlsx(x = st_load, file = paste0(path, "/Statistik/Zusammenfassung/",
 df_st_load <- as.data.frame(st_load)
 df_st_load <- df_st_load %>% dplyr::mutate_if(is.list, as.character)
 
-png(file = paste0(path, "/Statistik/Zusammenfassung/", Sys.Date(), "_Statistiken_kombiniert.png"), height = 750, width = 900)
+png(file = paste0(path, "/Statistik/Zusammenfassung/", Sys.Date(), "_Statistiken_kombiniert.png"), height = 750, width = 1000)
 gridExtra::grid.table(df_st_load, rows = NULL)
 dev.off()
 ```
