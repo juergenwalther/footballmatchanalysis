@@ -40,7 +40,7 @@ devtools::load_all()
 path <- "C://Users/Juergis/Documents/Fussball/Spielanalyse/Programm/Videoanalyse/WFV"
 
 # Folder name of match analysis
-spiel <- "20210924_Feucht-WFV"
+spiel <- "20211002_WFV-Cham"
 
 # Number of sections to divide match analysis
 n_sections <- 6
@@ -62,7 +62,7 @@ spielrichtung_real <- c(rep("r", 3), rep("l", 3)) # Die Spielrichtung in der Ana
 
 # Anzahl an Ecken manuelle hier eintragen. Die Werte werden in summary_table() ausgegeben
 ecken <- 2
-ecken_gegner <- 11
+ecken_gegner <- 3
 
 filenames <- c("paesse", "schuesse", "schuesse_gegner")
 
