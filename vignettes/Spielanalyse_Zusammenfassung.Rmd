@@ -40,7 +40,7 @@ devtools::load_all()
 path <- "C://Users/Juergis/Documents/Fussball/Spielanalyse/Programm/Videoanalyse/WFV"
 
 # Folder name of match analysis
-spiel <- "20211016_WFV-Gebenbach"
+spiel <- "20211023_Erlangen-WFV"
 
 # Number of sections to divide match analysis
 n_sections <- 6
@@ -58,11 +58,11 @@ plot_shots_individual <- FALSE
 plot_balls_individual <- FALSE
 
 # Spielrichtung im realen Spiel
-spielrichtung_real <- c(rep("r", 3), rep("l", 3)) # Die Spielrichtung in der Analyse ist immer von links nach rechts, also "r". Bei anderer Spielrichtung wird das Feld gespiegelt.
+spielrichtung_real <- c(rep("l", 3), rep("r", 3)) # Die Spielrichtung in der Analyse ist immer von links nach rechts, also "r". Bei anderer Spielrichtung wird das Feld gespiegelt.
 
 # Anzahl an Ecken manuelle hier eintragen. Die Werte werden in summary_table() ausgegeben
-ecken <- 4
-ecken_gegner <- 2
+ecken <- 2
+ecken_gegner <- 6
 
 filenames <- c("paesse", "schuesse", "schuesse_gegner")
 
