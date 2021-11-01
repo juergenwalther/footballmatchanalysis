@@ -1,0 +1,54 @@
+---
+title: "Tracktics Analyse"
+author: "Dr. Jürgen Walther"
+date: "11/1/2021"
+output: html_document
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(xlsx)
+library(dplyr)
+library(gridExtra)
+library(grid)
+```
+
+
+
+```{r combine summary statistics, warning=FALSE,message=FALSE, echo=FALSE}
+
+path <- "C://Users/Juergis/Documents/Fussball/Spielanalyse"
+
+
+tracktics_files <- list.files(path = paste0(path, "/Tracktics/"), pattern = "*csv", full.names = TRUE)
+
+tracktics_manuell <- read.csv(file = "C://Users/Juergis/Documents/Fussball/Spielanalyse/Tracktics/Tracktics_manuell.csv", )
+
+data_tt <- do.call("cbind",lapply(1:(length(tracktics_files)-1), function(i) c(tracktics_read_team_stats(tracktics_files[i]), 
+                                                                    tracktics_manuell[i,2:dim(tracktics_manuell)[2]]
+                                                                    )
+                       )
+)
+
+
+spiele <- list.files(path = paste0(path, "/Tracktics/"), pattern = "*csv", full.names = FALSE)
+spiele <- substring(spiele, 1, nchar(spiele)-4)
+spiele <- spiele[-length(spiele)]
+
+colnames(data_tt) <- c(spiele)
+
+# Save table
+xlsx::write.xlsx(x = st_load, file = paste0(path, "/Statistik/Zusammenfassung/", Sys.Date(), "_Statistiken_kombiniert.xlsx"), row.names = FALSE)
+
+df_st_load <- as.data.frame(st_load)
+df_st_load <- df_st_load %>% dplyr::mutate_if(is.list, as.character)
+
+# For every match add 100 in width
+png(file = paste0(path, "/Statistik/Zusammenfassung/", Sys.Date(), "_Statistiken_kombiniert.png"), height = 750, width = 700 + length(stat_files) * 110)
+gridExtra::grid.table(df_st_load, rows = NULL)
+dev.off()
+```
