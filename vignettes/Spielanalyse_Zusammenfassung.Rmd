@@ -16,6 +16,8 @@ library(devtools)
 library(dplyr)
 library(ggplot2)
 library(data.table)
+# Read modules
+library(readxl)
 # Modules for specific functions
 library(tidyr)
 # Plot moduless
@@ -40,7 +42,7 @@ devtools::load_all()
 path <- "C://Users/Juergis/Documents/Fussball/Spielanalyse/Programm/Videoanalyse/WFV"
 
 # Folder name of match analysis
-spiel <- "20211023_Erlangen-WFV"
+spiel <- "20211030_WFV-Ammerthal"
 
 # Number of sections to divide match analysis
 n_sections <- 6
@@ -58,11 +60,13 @@ plot_shots_individual <- FALSE
 plot_balls_individual <- FALSE
 
 # Spielrichtung im realen Spiel
-spielrichtung_real <- c(rep("l", 3), rep("r", 3)) # Die Spielrichtung in der Analyse ist immer von links nach rechts, also "r". Bei anderer Spielrichtung wird das Feld gespiegelt.
+spielrichtung_real <- c(rep("r", 3), rep("l", 3)) # Die Spielrichtung in der Analyse ist immer von links nach rechts, also "r". Bei anderer Spielrichtung wird das Feld gespiegelt.
 
-# Anzahl an Ecken manuelle hier eintragen. Die Werte werden in summary_table() ausgegeben
-ecken <- 2
-ecken_gegner <- 6
+# Anzahl an Ecken vom Excel Sheet erhalten. Die Werte werden in summary_table() ausgegeben
+files_xlsx <- list.files(paste0(path,"/",spiel), pattern = "\\.xlsx$", full.names = TRUE)
+ecken_all <- get_corners(file = files_xlsx[length(files_xlsx)])
+ecken <- ecken_all[1]
+ecken_gegner <- ecken_all[2]
 
 filenames <- c("paesse", "schuesse", "schuesse_gegner")
 
