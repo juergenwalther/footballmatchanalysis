@@ -26,7 +26,7 @@ path <- "C://Users/Juergis/Documents/Fussball/Spielanalyse"
 
 tracktics_files <- list.files(path = paste0(path, "/Tracktics/"), pattern = "*csv", full.names = TRUE)
 
-tracktics_manuell <- read.csv(file = "C://Users/Juergis/Documents/Fussball/Spielanalyse/Tracktics/Tracktics_manuell.csv", )
+tracktics_manuell <- tracktics_read_manual_csv(file = "C://Users/Juergis/Documents/Fussball/Spielanalyse/Tracktics/Tracktics_manuell.csv")
 
 data_tt <- do.call("cbind",lapply(1:(length(tracktics_files)-1), function(i) c(tracktics_read_team_stats(tracktics_files[i]), 
                                                                     tracktics_manuell[i,2:dim(tracktics_manuell)[2]]
@@ -39,16 +39,27 @@ spiele <- list.files(path = paste0(path, "/Tracktics/"), pattern = "*csv", full.
 spiele <- substring(spiele, 1, nchar(spiele)-4)
 spiele <- spiele[-length(spiele)]
 
-colnames(data_tt) <- c(spiele)
+data_tt <- cbind(rownames(data_tt), data_tt)
+rownames(data_tt) = NULL
+
+# Ziele definieren
+targets <- tracktics_define_targets(data_tt)
+data_tt <- cbind(data_tt[,1], targets, data_tt[,2:dim(data_tt)[2]])
+
+# Tabelle sortieren
+data_tt <- data_tt[c(1:9, 19:21, 10:16, 26:28, 17, 22:25),]
+
+colnames(data_tt) <- c("Tracktics Parameter", "Ziel", spiele)
+
 
 # Save table
-xlsx::write.xlsx(x = st_load, file = paste0(path, "/Statistik/Zusammenfassung/", Sys.Date(), "_Statistiken_kombiniert.xlsx"), row.names = FALSE)
+xlsx::write.xlsx(x = data_tt, file = paste0(path, "/Tracktics/Zusammenfassung/", Sys.Date(), "_Statistiken_kombiniert.xlsx"), row.names = FALSE)
 
-df_st_load <- as.data.frame(st_load)
-df_st_load <- df_st_load %>% dplyr::mutate_if(is.list, as.character)
+df_data_tt <- as.data.frame(data_tt)
+df_data_tt <- df_data_tt %>% dplyr::mutate_if(is.list, as.character)
 
 # For every match add 100 in width
-png(file = paste0(path, "/Statistik/Zusammenfassung/", Sys.Date(), "_Statistiken_kombiniert.png"), height = 750, width = 700 + length(stat_files) * 110)
-gridExtra::grid.table(df_st_load, rows = NULL)
+png(file = paste0(path, "/Tracktics/Zusammenfassung/", Sys.Date(), "_Statistiken_kombiniert.png"), height = 610, width = 550 + length(tracktics_files) * 110)
+gridExtra::grid.table(df_data_tt, rows = NULL)
 dev.off()
 ```
