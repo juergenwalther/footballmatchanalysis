@@ -2,6 +2,7 @@ summary_table <- function(pass,
                           shots,
                           shots_opp,
                           pass_areas,
+                          pass_space_won_tot,
                           ecken,
                           ecken_gegner,
                           own_area = 22,
@@ -14,6 +15,9 @@ summary_table <- function(pass,
   n_pass <- nrow(pass)
   n_pass_more10 <- get_pass_sequences(pass_tot, n = 10) %>% ungroup() %>% dplyr::select(Zeit) %>% dplyr::distinct() %>% summarise(n())
   n_pass_more20 <- get_pass_sequences(pass_tot, n = 20) %>% ungroup() %>% dplyr::select(Zeit) %>% dplyr::distinct() %>% summarise(n())
+  n_pass_s5_spw50 <- nrow(pass_space_won_tot[pass_space_won_tot$space_won >= 50 & pass_space_won_tot$total < 5,])
+  n_pass_l5_spw50 <- nrow(pass_space_won_tot[pass_space_won_tot$space_won >= 50 & pass_space_won_tot$total >= 5,])
+  n_pass_l10_spw50 <- nrow(pass_space_won_tot[pass_space_won_tot$space_won >= 50 & pass_space_won_tot$total >= 10,])
   n_pass_area <- round(get_passes_completed_areas(pass)$perc, 2)
   n_pass_area_all <- round(get_passes_completed_areas(pass)$all_perc[1], 2)
   n_shots <- nrow(shots)
@@ -33,13 +37,16 @@ summary_table <- function(pass,
                               )
   )
 
-  result <- c(n_pass, n_pass_more10, n_pass_more20, n_pass_area_all, n_pass_area,
+  result <- c(n_pass, n_pass_more10, n_pass_more20,
+              n_pass_s5_spw50, n_pass_l5_spw50, n_pass_l10_spw50,
+              n_pass_area_all, n_pass_area,
               n_shots, n_shots_inside_area, n_shots_outside_area,
               n_shots_opp, n_shots_opp_inside_area, n_shots_opp_outside_area,
               n_ballslost_1, n_ballslost_2, n_ballslost_3, n_ballswon_1, n_ballswon_2, n_ballswon_3,
               vec_n_pass, ecken, ecken_gegner)
 
   myrownames <- c("Pässe", "Passstafetten mit mehr als 10 Pässen","Passstafetten mit mehr als 20 Pässen",
+                  "Passstafetten < 5 Pässe und >50m Raumgewinn", "Passstafetten >= 5 Pässe und >50m Raumgewinn", "Passstafetten >=10 Pässe und >50m Raumgewinn",
                   "Anteil angekommene Pässe ganzes Spielfeld",
                   "Anteil angekommene Pässe defensives Drittel", "Anteil angekommene Pässe mittleres Drittel", "Anteil angekommene Pässe offensives Drittel",
                  "Schüsse", "Schüsse innerhalb des Strafraums", "Schüsse außerhalb des Strafraums",
