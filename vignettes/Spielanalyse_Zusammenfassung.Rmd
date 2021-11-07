@@ -42,7 +42,7 @@ devtools::load_all()
 path <- "C://Users/Juergis/Documents/Fussball/Spielanalyse/Programm/Videoanalyse/WFV"
 
 # Folder name of match analysis
-spiel <- "20210905_Seligenporten-WFV"
+spiel <- "20211106_WFV-VatanSpor"
 
 # Number of sections to divide match analysis
 n_sections <- 6
