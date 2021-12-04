@@ -49,7 +49,9 @@ data_tt <- cbind(data_tt[,1], targets, data_tt[,2:dim(data_tt)[2]])
 # Tabelle sortieren
 data_tt <- data_tt[c(1:9, 19:21, 10:16, 26:28, 17, 22:25),]
 
-colnames(data_tt) <- c("Tracktics Parameter", "Ziel", spiele)
+red_match_names <- table_shorten_match_name(match_names = spiele)
+
+colnames(data_tt) <- c("Tracktics Parameter", "Ziel", red_match_names)
 
 
 # Save table
@@ -59,7 +61,7 @@ df_data_tt <- as.data.frame(data_tt)
 df_data_tt <- df_data_tt %>% dplyr::mutate_if(is.list, as.character)
 
 # For every match add 100 in width
-png(file = paste0(path, "/Tracktics/Zusammenfassung/", Sys.Date(), "_Statistiken_kombiniert.png"), height = 610, width = 550 + length(tracktics_files) * 120)
+png(file = paste0(path, "/Tracktics/Zusammenfassung/", Sys.Date(), "_Statistiken_kombiniert.png"), height = 610, width = 650 + length(tracktics_files) * 40)
 gridExtra::grid.table(df_data_tt, rows = NULL)
 dev.off()
 ```

@@ -34,7 +34,9 @@ for (i in 2:length(stat_files)) {
   spiel_load <- c(spiel_load, spiel)
 }
 
-colnames(st_load) <- c("Parameter", spiel_load)
+red_match_names <- table_shorten_match_name(match_names = spiel_load)
+
+colnames(st_load) <- c("Parameter", red_match_names)
 # Im Seligenporten-Spiel wurden keine Ecken gezählt
 st_load[c(nrow(st_load) - 1, nrow(st_load)), 2] <- c(NA, NA)
 
@@ -45,7 +47,7 @@ df_st_load <- as.data.frame(st_load)
 df_st_load <- df_st_load %>% dplyr::mutate_if(is.list, as.character)
 
 # For every match add 100 in width
-png(file = paste0(path, "/Statistik/Zusammenfassung/", Sys.Date(), "_Statistiken_kombiniert.png"), height = 800, width = 700 + length(stat_files) * 120)
+png(file = paste0(path, "/Statistik/Zusammenfassung/", Sys.Date(), "_Statistiken_kombiniert.png"), height = 800, width = 650 + length(stat_files) * 40)
 gridExtra::grid.table(df_st_load, rows = NULL)
 dev.off()
 ```
