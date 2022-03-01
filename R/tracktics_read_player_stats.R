@@ -29,7 +29,7 @@ tracktics_read_player_stats <- function(file, player_first_name, player_last_nam
     "Anzahl Sprints", "Anzahl Sprints 1.HZ", "Anzahl Sprints 2.HZ",
     "Anzahl progressiver Sprints", "Anzahl progressiver Sprints 1.HZ", "Anzahl progressiver Sprints 2.HZ",
     "Anteil progressiver Sprints an Sprints (in %)", "Anteil progressiver Sprints an Sprints 1.HZ (in %)", "Anteil progressiver Sprints an Sprints 2.HZ (in %)",
-    "Sprint Höchstgeschwindigkeit (in km/h)", "Durchschnittliche Sprint Höchstgeschwindigkeit (in km/h)"
+    "Sprint Höchstgeschwindigkeit (in km/h)", "Durchschnittliche Sprinthöchstgeschwindigkeit (in km/h)"
   )
 
   return(ret)
