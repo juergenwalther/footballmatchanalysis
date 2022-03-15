@@ -49,7 +49,7 @@ df_st_load <- as.data.frame(st_load)
 df_st_load <- df_st_load %>% dplyr::mutate_if(is.list, as.character)
 
 # For every match add 100 in width
-png(file = paste0(path, "/Statistik/Zusammenfassung/", Sys.Date(), "_Statistiken_kombiniert.png"), height = 800, width = 650 + length(stat_files) * 45)
+png(file = paste0(path, "/Statistik/Zusammenfassung/", Sys.Date(), "_Statistiken_kombiniert.png"), height = 800, width = 650 + length(stat_files) * 50)
 gridExtra::grid.table(df_st_load, rows = NULL)
 dev.off()
 ```
