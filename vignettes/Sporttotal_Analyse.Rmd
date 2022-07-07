@@ -30,19 +30,30 @@ library(xlsx)
 library(gridExtra)
 library(grid)
 # Load footballmatchanalysis
-# install.packages("C:/Users/Juergis/Documents/Fussball/Spielanalyse/Programm/Software/repo/footballmatchanalysis_0.1.0.tar.gz", repos = NULL, type = "source")
+# install.packages("C:/Users/Juergis/Documents/Fussball/Spielanalyse/Programm/Software/repo/footballmatchanalysis_0.2.0.tar.gz", repos = NULL, type = "source")
 # library(footballmatchanalysis)
 devtools::load_all()
 ```
+
+# Variable Daten
+
+```{r}
+# Folder name of match analysis
+spiel <- "20220313_DonBosco-WFV"
+
+# Spielrichtung im realen Spiel
+spielrichtung_real <- c(rep("r", 3), rep("l", 3)) # Die Spielrichtung in der Analyse ist immer von links nach rechts, also "r". Bei anderer Spielrichtung wird das Feld gespiegelt.
+```
+
 
 # Daten laden
 
 ```{r load data, warning=FALSE,message=FALSE, echo=FALSE}
 
-path <- "C://Users/Juergis/Documents/Fussball/Spielanalyse/Programm/Videoanalyse/WFV"
+parent_path <- "C://Users/Juergis/Documents/Fussball/Spielanalyse/Programm/Videoanalyse/WFV"
+season <- "Saison2223"
+path <- paste0(parent_path, "/", season)
 
-# Folder name of match analysis
-spiel <- "20220313_DonBosco-WFV"
 
 # Number of sections to divide match analysis
 n_sections <- 6
@@ -59,8 +70,6 @@ plot_raw_data <- FALSE
 plot_shots_individual <- FALSE
 plot_balls_individual <- FALSE
 
-# Spielrichtung im realen Spiel
-spielrichtung_real <- c(rep("r", 3), rep("l", 3)) # Die Spielrichtung in der Analyse ist immer von links nach rechts, also "r". Bei anderer Spielrichtung wird das Feld gespiegelt.
 
 # Anzahl an Ecken vom Excel Sheet erhalten. Die Werte werden in summary_table() ausgegeben
 files_xlsx <- list.files(paste0(path,"/",spiel), pattern = "\\.xlsx$", full.names = TRUE)
@@ -80,7 +89,7 @@ all_data <- lapply(filenames, function(file) {
 })
 ```
 
-# Variablen definieren
+# Variablen und Pfade definieren
 
 ```{r important variables, warning=FALSE,message=FALSE, echo=FALSE}
 
@@ -416,7 +425,6 @@ plot_shots(df = shots_opp_tot, title = "Schüsse des Gegners", subtitle = paste0
 
 summary_table <- summary_table(pass = pass_tot, shots = shots_tot, shots_opp = shots_opp_tot, pass_areas = pass_areas_tot, pass_space_won_tot = pass_space_won_tot, ecken = ecken, ecken_gegner = ecken_gegner)
 
-xlsx::write.xlsx(x = summary_table, file = paste0(outfolder, "/", spiel, "_Zusammenfassung_Statistiken.xlsx"), row.names = FALSE)
 # Save spiel, spielrichtung_real and summary table as R object
 save(spiel, 
      spielrichtung_real, 
@@ -429,12 +437,57 @@ save(spiel,
      ecken_gegner,
      summary_table, file = paste0(path, "/Statistik/", spiel, ".Rdata"))
 
+summary_table_single <- summary_table
 
+df_final <- as.data.frame(summary_table)
+df_final <- df_final %>% dplyr::mutate_if(is.list, as.character)
+```
 
-df_st <- as.data.frame(summary_table)
-df_st <- df_st %>% dplyr::mutate_if(is.list, as.character)
+# Zusammenfassung aller Spieler
+
+```{r combine summary statistics, warning=FALSE,message=FALSE, echo=FALSE}
+
+stat_files <- list.files(path = paste0(path, "/Statistik/"), pattern = "*Rdata", full.names = TRUE)
+
+load(stat_files[1])
+summary_load <- summary_table
+spiel_load <- spiel
+for (i in 2:length(stat_files)) {
+  load(stat_files[i])
+  summary_load <- cbind(summary_load, summary_table[, 2])
+  spiel_load <- c(spiel_load, spiel)
+}
+
+red_match_names <- table_shorten_match_name(match_names = spiel_load)
+
+colnames(summary_load) <- c("Parameter", red_match_names)
+# Im Seligenporten-Spiel Saison2122 wurden keine Ecken gezählt
+#summary_load[c(nrow(summary_load) - 1, nrow(summary_load)), 2] <- c(NA, NA)
+
+df_summary_load <- as.data.frame(summary_load)
+df_summary_load <- df_summary_load %>% dplyr::mutate_if(is.list, as.character)
+```
+
+# Generieren des Outputs in Form von Excel Tabelle und Bilder der Zusammenfassung
+
+```{r generate output}
+
+# Einzelspielanalyse
+xlsx::write.xlsx(x = summary_table_single, file = paste0(outfolder, "/", spiel, "_Zusammenfassung_Statistiken.xlsx"), row.names = FALSE)
 
 png(file = paste0(outfolder, "/", spiel, "_Zusammenfassung_Statistiken.png"), height = 800, width = 400)
-gridExtra::grid.table(df_st, rows = NULL)
+gridExtra::grid.table(df_final, rows = NULL)
+dev.off()
+
+
+
+# Zusammenfassung aller Spiele
+# Save table
+xlsx::write.xlsx(x = summary_load, file = paste0(path, "/Statistik/Zusammenfassung/", Sys.Date(), "_Statistiken_kombiniert.xlsx"), row.names = FALSE)
+
+# For every match add 100 in width
+png(file = paste0(path, "/Statistik/Zusammenfassung/", Sys.Date(), "_Statistiken_kombiniert.png"), height = 800, width = 650 + length(stat_files) * 50)
+gridExtra::grid.table(df_summary_load, rows = NULL)
 dev.off()
 ```
+
