@@ -20,7 +20,9 @@ library(grid)
 
 ```{r combine summary statistics, warning=FALSE,message=FALSE, echo=FALSE}
 
-path <- "C://Users/Juergis/Documents/Fussball/Spielanalyse/Programm/Videoanalyse/WFV"
+parent_path <- "C://Users/Juergis/Documents/Fussball/Spielanalyse/Programm/Videoanalyse/WFV"
+season <- "Saison2223"
+path <- paste0(parent_path, "/", season)
 
 
 stat_files <- list.files(path = paste0(path, "/Statistik/"), pattern = "*Rdata", full.names = TRUE)
