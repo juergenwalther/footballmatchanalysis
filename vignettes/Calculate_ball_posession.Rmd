@@ -1,0 +1,42 @@
+---
+title: "Tracktics Analyse"
+author: "Dr. Jürgen Walther"
+date: "11/1/2021"
+output: html_document
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r libraries}
+library(xlsx)
+library(dplyr)
+library(gridExtra)
+library(grid)
+```
+
+```{r input data}
+# We manually read the total number of passes for each match and the guessed ball possession for every match from the Excel file for each match
+passes <- c(472,689,491,374,504,416,442,584,502,584,472,467,391,511)
+ballbesitz <- c(0.4,0.7,0.45,0.3,0.45,0.35,0.35,0.6,0.5,0.6,0.45,0.45,0.35,0.55)
+df <- as.data.frame(cbind(passes,ballbesitz))
+
+plot(df$passes, df$ballbesitz)
+```
+
+```{r linear fit}
+cor(df$passes,df$ballbesitz)
+
+linearMod <- lm(ballbesitz ~ passes, data=df)  # build linear regression model on full data
+print(linearMod)
+summary(linearMod)
+```
+```{r test}
+no_passes <- 650
+
+possession <- linearMod$coefficients[2] * no_passes + linearMod$coefficients[1]
+possession
+```
+
