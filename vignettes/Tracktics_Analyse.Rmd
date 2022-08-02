@@ -23,11 +23,12 @@ library(grid)
 
 path <- "C://Users/Juergis/Documents/Fussball/Spielanalyse/Tracktics"
 season <- "Saison2223"
+full_path <- paste0(path, "/", season)
 
 
-tracktics_files <- list.files(path = paste0(path, "/", season), pattern = "*csv", full.names = TRUE)
+tracktics_files <- list.files(path = paste0(full_path), pattern = "*csv", full.names = TRUE)
 
-tracktics_manuell <- tracktics_read_manual_csv(file = paste0(path, "/Tracktics_manuell.csv"))
+tracktics_manuell <- tracktics_read_manual_csv(file = paste0(full_path, "/Tracktics_manuell.csv"))
 
 data_tt <- do.call("cbind",lapply(1:(length(tracktics_files)-1), function(i) c(tracktics_read_team_stats(tracktics_files[i]), 
                                                                     tracktics_manuell[i,2:dim(tracktics_manuell)[2]]
@@ -36,7 +37,7 @@ data_tt <- do.call("cbind",lapply(1:(length(tracktics_files)-1), function(i) c(t
 )
 
 
-spiele <- list.files(path = paste0(path, "/", season), pattern = "*csv", full.names = FALSE)
+spiele <- list.files(path = paste0(full_path), pattern = "*csv", full.names = FALSE)
 spiele <- substring(spiele, 1, nchar(spiele)-4)
 spiele <- spiele[-length(spiele)]
 
@@ -56,13 +57,13 @@ colnames(data_tt) <- c("Tracktics Parameter", "Ziel", red_match_names)
 
 
 # Save table
-xlsx::write.xlsx(x = data_tt, file = paste0(path, "/Zusammenfassung/", Sys.Date(), "_Statistiken_kombiniert.xlsx"), row.names = FALSE)
+xlsx::write.xlsx(x = data_tt, file = paste0(full_path, "/Zusammenfassung/", Sys.Date(), "_Statistiken_kombiniert.xlsx"), row.names = FALSE)
 
 df_data_tt <- as.data.frame(data_tt)
 df_data_tt <- df_data_tt %>% dplyr::mutate_if(is.list, as.character)
 
 # For every match add 100 in width
-png(file = paste0(path, "/Zusammenfassung/", Sys.Date(), "_Statistiken_kombiniert.png"), height = 610, width = 650 + length(tracktics_files) * 45)
+png(file = paste0(full_path, "/Zusammenfassung/", Sys.Date(), "_Statistiken_kombiniert.png"), height = 610, width = 650 + length(tracktics_files) * 45)
 gridExtra::grid.table(df_data_tt, rows = NULL)
 dev.off()
 ```
