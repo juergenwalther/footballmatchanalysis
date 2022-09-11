@@ -15,6 +15,7 @@ library(xlsx)
 library(dplyr)
 library(gridExtra)
 library(grid)
+devtools::load_all()
 ```
 
 
@@ -63,7 +64,7 @@ df_data_tt <- as.data.frame(data_tt)
 df_data_tt <- df_data_tt %>% dplyr::mutate_if(is.list, as.character)
 
 # For every match add 100 in width
-png(file = paste0(full_path, "/Zusammenfassung/", Sys.Date(), "_Statistiken_kombiniert.png"), height = 610, width = 650 + length(tracktics_files) * 45)
+png(file = paste0(full_path, "/Zusammenfassung/", Sys.Date(), "_Statistiken_kombiniert.png"), height = 610, width = 450 + length(tracktics_files) * 72)
 gridExtra::grid.table(df_data_tt, rows = NULL)
 dev.off()
 ```
