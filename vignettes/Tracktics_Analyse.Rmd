@@ -72,17 +72,19 @@ dev.off()
 
 ```{r einzelspieler analyse}
 
-first_name <- "Moritz"
-last_name <- "Lotzen"
+player_names <- tracktics_read_player_name(tracktics_files[length(tracktics_files)-1])
+
+for(i in 1:nrow(player_names)){
+
+first_name <- player_names$First.Name[i]
+last_name <- player_names$Last.Name[i]
 
 spiele <- obtain_match_names(file_path = full_path)
 red_match_names <- table_shorten_match_name(match_names = spiele)
 
-data_single <- do.call("cbind", lapply(1:(length(tracktics_files) - 1), function(i) tracktics_read_player_stats(file = tracktics_files[i], 
-                                                                                                                player_first_name = first_name, 
-                                                                                                                player_last_name = last_name,
-                                                                                                                match_name = red_match_names[[i]])))
+data_single <- do.call("cbind", lapply(1:(length(tracktics_files) - 1), function(i) tracktics_read_player_stats(file = tracktics_files[i], player_first_name = first_name, player_last_name = last_name, match_name = red_match_names[[i]])))
 
+# Transform to table
 colnames(data_single) <- c(data_single[1,])
 data_single <- data_single[-1,]
 
@@ -93,10 +95,21 @@ colnames(data_single_tt) <- c("Tracktics Paramter", colnames(data_single))
 df_data_single_tt <- as.data.frame(data_single_tt)
 df_data_single_tt <- df_data_single_tt %>% dplyr::mutate_if(is.list, as.character)
 
-# For every match add 100 in width
-png(file = paste0(full_path, "/Einzelspieler/", Sys.Date(), "_",first_name,"_",last_name,".png"), height = 470, width = 320 + (ncol(df_data_single_tt)-1) * 75)
-gridExtra::grid.table(df_data_single_tt, rows = NULL)
+# Plot result
+png(file = paste0(full_path, "/Einzelspieler/", first_name,"_",last_name, "_", Sys.Date(),".png"), height = 540, width = 320 + (ncol(df_data_single_tt)-1) * 75)
+table <- tableGrob(df_data_single_tt, rows = NULL)
+title <- textGrob(paste0(first_name, " ", last_name), gp = gpar(fontsize = 40))
+padding <- unit(1,"line")
+table <- gtable_add_rows(
+  table, heights = grobHeight(title) + padding, pos = 0
+)
+table <- gtable_add_grob(
+  table, list(title),
+  t = 1, l = 1, r = ncol(table)
+)
+grid.newpage()
+grid.draw(table)
 dev.off()
+}
 
 ```
-
