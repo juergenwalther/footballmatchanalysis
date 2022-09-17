@@ -37,10 +37,11 @@ data_tt <- do.call("cbind",lapply(1:(length(tracktics_files)-1), function(i) c(t
                        )
 )
 
+spiele <- obtain_match_names(file_path = full_path)
 
-spiele <- list.files(path = paste0(full_path), pattern = "*csv", full.names = FALSE)
-spiele <- substring(spiele, 1, nchar(spiele)-4)
-spiele <- spiele[-length(spiele)]
+#spiele <- list.files(path = paste0(full_path), pattern = "*csv", full.names = FALSE)
+#spiele <- substring(spiele, 1, nchar(spiele)-4)
+#spiele <- spiele[-length(spiele)]
 
 data_tt <- cbind(rownames(data_tt), data_tt)
 rownames(data_tt) = NULL
@@ -68,3 +69,34 @@ png(file = paste0(full_path, "/Zusammenfassung/", Sys.Date(), "_Statistiken_komb
 gridExtra::grid.table(df_data_tt, rows = NULL)
 dev.off()
 ```
+
+```{r einzelspieler analyse}
+
+first_name <- "Moritz"
+last_name <- "Lotzen"
+
+spiele <- obtain_match_names(file_path = full_path)
+red_match_names <- table_shorten_match_name(match_names = spiele)
+
+data_single <- do.call("cbind", lapply(1:(length(tracktics_files) - 1), function(i) tracktics_read_player_stats(file = tracktics_files[i], 
+                                                                                                                player_first_name = first_name, 
+                                                                                                                player_last_name = last_name,
+                                                                                                                match_name = red_match_names[[i]])))
+
+colnames(data_single) <- c(data_single[1,])
+data_single <- data_single[-1,]
+
+data_single_tt <- cbind(rownames(data_single), data_single)
+colnames(data_single_tt) <- c("Tracktics Paramter", colnames(data_single))
+
+
+df_data_single_tt <- as.data.frame(data_single_tt)
+df_data_single_tt <- df_data_single_tt %>% dplyr::mutate_if(is.list, as.character)
+
+# For every match add 100 in width
+png(file = paste0(full_path, "/Einzelspieler/", Sys.Date(), "_",first_name,"_",last_name,".png"), height = 470, width = 320 + (ncol(df_data_single_tt)-1) * 75)
+gridExtra::grid.table(df_data_single_tt, rows = NULL)
+dev.off()
+
+```
+
