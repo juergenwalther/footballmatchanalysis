@@ -15,6 +15,7 @@ library(xlsx)
 library(dplyr)
 library(gridExtra)
 library(grid)
+library(gtable)
 devtools::load_all()
 ```
 
