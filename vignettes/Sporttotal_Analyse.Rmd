@@ -39,10 +39,10 @@ devtools::load_all()
 
 ```{r}
 # Folder name of match analysis
-spiel <- "20220912_WFV-Donaustauf"
+spiel <- "20220916_Eltersdorf-WFV"
 
 # Spielrichtung im realen Spiel
-spielrichtung_real <- c(rep("r", 3), rep("l", 3)) # Die Spielrichtung in der Analyse ist immer von links nach rechts, also "r". Bei anderer Spielrichtung wird das Feld gespiegelt.
+spielrichtung_real <- c(rep("l", 3), rep("r", 3)) # Die Spielrichtung in der Analyse ist immer von links nach rechts, also "r". Bei anderer Spielrichtung wird das Feld gespiegelt.
 ```
 
 
