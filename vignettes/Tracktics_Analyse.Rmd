@@ -89,8 +89,10 @@ data_single <- do.call("cbind", lapply(1:(length(tracktics_files) - 1), function
 colnames(data_single) <- c(data_single[1,])
 data_single <- data_single[-1,]
 
-data_single_tt <- cbind(rownames(data_single), data_single)
-colnames(data_single_tt) <- c("Tracktics Paramter", colnames(data_single))
+summ_stats <- tracktics_single_player_summary(data_single = data_single)
+
+data_single_tt <- cbind(rownames(data_single), summ_stats, data_single)
+colnames(data_single_tt) <- c("Tracktics Paramter", "Durchschnitt", colnames(data_single))
 
 
 df_data_single_tt <- as.data.frame(data_single_tt)
@@ -101,7 +103,7 @@ first_name <- tracktics_correct_names(name = first_name)
 last_name <- tracktics_correct_names(name = last_name)
 
 # Plot result
-png(file = paste0(full_path, "/Einzelspieler/", first_name,"_",last_name, "_", Sys.Date(),".png"), height = 540, width = 320 + (ncol(df_data_single_tt)-1) * 75)
+png(file = paste0(full_path, "/Einzelspieler/", first_name,"_",last_name, "_", Sys.Date(),".png"), height = 540, width = 340 + (ncol(df_data_single_tt)-1) * 75)
 table <- tableGrob(df_data_single_tt, rows = NULL)
 title <- textGrob(paste0(first_name, " ", last_name), gp = gpar(fontsize = 40))
 padding <- unit(1,"line")
