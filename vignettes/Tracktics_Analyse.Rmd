@@ -96,6 +96,10 @@ colnames(data_single_tt) <- c("Tracktics Paramter", colnames(data_single))
 df_data_single_tt <- as.data.frame(data_single_tt)
 df_data_single_tt <- df_data_single_tt %>% dplyr::mutate_if(is.list, as.character)
 
+#Correct name for plotting
+first_name <- tracktics_correct_names(name = first_name)
+last_name <- tracktics_correct_names(name = last_name)
+
 # Plot result
 png(file = paste0(full_path, "/Einzelspieler/", first_name,"_",last_name, "_", Sys.Date(),".png"), height = 540, width = 320 + (ncol(df_data_single_tt)-1) * 75)
 table <- tableGrob(df_data_single_tt, rows = NULL)

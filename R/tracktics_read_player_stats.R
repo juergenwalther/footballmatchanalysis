@@ -29,7 +29,7 @@ tracktics_read_player_stats <- function(file, player_first_name, player_last_nam
   ret <- c(
     match_name,
     df_player$Time.on.Pitch..mins.,
-    round(as.numeric(df_player$Distance..km.)/as.numeric(df_player$Time.on.Pitch..mins.),2),
+    round(as.numeric(df_player$Distance..km.)/as.numeric(df_player$Time.on.Pitch..mins.) * 1000,0),
     df_player$Distance..km., df_player$Distance.1st.Half..km., df_player$Distance.2nd.Half..km.,
     df_player$Distance.in.HI..km., df_player$Distance.in.HI.1st.Half.km., df_player$Distance.in.HI.2nd.Half..km.,
     round(c(df_player$Distance.in.HI..km. / df_player$Distance..km., df_player$Distance.in.HI.1st.Half.km. / df_player$Distance.1st.Half..km., df_player$Distance.in.HI.2nd.Half..km. / df_player$Distance.2nd.Half..km.) * 100, digits = 1),
@@ -42,7 +42,7 @@ tracktics_read_player_stats <- function(file, player_first_name, player_last_nam
   names(ret) <- c(
     "Match",
     "Gespielte Minuten",
-    "Distanz pro gespielte Minute (in km)",
+    "Distanz pro gespielte Minute (in m)",
     "Distanz Spiel (in km)", "Distanz 1.HZ (in km)", "Distanz 2.HZ (in km)",
     "Distanz HI Spiel (in km)", "Distanz HI 1.HZ (in km)", "Distanz HI 2.HZ (in km)",
     "Anteil von HI an Gesamtdistanz (in %)", "Anteil von HI an Gesamtdistanz 1.HZ (in %)", "Anteil von HI an Gesamtdistanz 2.HZ (in %)",
