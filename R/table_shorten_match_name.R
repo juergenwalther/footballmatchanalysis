@@ -1,3 +1,12 @@
+#' Convert long string of match names into short form
+#'
+#' @param match_names string. Each string vector element corresponds to a
+#' match name in the form '20211120_WFV-Karlburg'
+#'
+#' @return string vector of shortened match names such as '2111_Karl'
+#' @export
+#'
+#' @examples
 table_shorten_match_name <- function(match_names) {
   ls_split_date <- strsplit(match_names, split = "_")
   ls_names <- lapply(ls_split_date, function(x) {
