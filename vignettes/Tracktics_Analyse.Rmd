@@ -28,8 +28,8 @@ path <- "C://Users/Juergis/Documents/Fussball/Spielanalyse/Tracktics"
 season <- "Saison2223"
 full_path <- paste0(path, "/", season)
 
-plot_mannschaft <- FALSE
-einzelspieler_analyse <- TRUE
+plot_mannschaft <- TRUE
+einzelspieler_analyse <- FALSE
 plot_einzelspieler <- FALSE
 grouping <- TRUE
 plot_grouping <- TRUE
@@ -65,6 +65,17 @@ data_tt <- cbind(data_tt[, 1], targets, data_tt[, 2:dim(data_tt)[2]])
 # Tabelle sortieren
 data_tt <- data_tt[c(1:9, 19:21, 10:16, 26:28, 17, 22:25), ]
 
+# Tabelle filtern
+display_parameters <- c(
+  "Distanz Spiel (in km)", "Distanz 1.HZ (in km)", "Distanz 2.HZ (in km)", "Durschnittliche Distanz pro Spieler (in km)", "Durschnittliche Distanz pro Spieler 1.HZ (in km)", "Durschnittliche Distanz pro Spieler 2.HZ (in km)", "Anteil von HI an Gesamtdistanz (in %)",
+  "Anteil von HI an Gesamtdistanz 1.HZ (in %)", "Anteil von HI an Gesamtdistanz 2.HZ (in %)", "Anteil von Sprinten an Gesamtdistanz (in %)", "Anteil von Rennen an Gesamtdistanz (in %)", "Anteil Spiel im vorderen Drittel", "Anzahl Sprints", "Durchschnittliche Anzahl Sprints pro Spieler",
+  "Durchschnittliche Anzahl Sprints pro Spieler 1.HZ", "Durchschnittliche Anzahl Sprints pro Spieler 2.HZ",
+  "Anzahl progressiver Sprints", "Anzahl progressiver Sprints 1.HZ",
+  "Anzahl progressiver Sprints 2.HZ", "Anzahl Sprints in Spielrichtung"
+)
+
+data_tt <- data_tt[unlist(data_tt[,1]) %in% display_parameters,]
+
 red_match_names <- table_shorten_match_name(match_names = spiele)
 
 colnames(data_tt) <- c("Tracktics Parameter", "Ziel", red_match_names)
@@ -77,7 +88,7 @@ if (plot_mannschaft) {
   df_data_tt <- df_data_tt %>% dplyr::mutate_if(is.list, as.character)
 
   # For every match add 100 in width
-  png(file = paste0(full_path, "/Zusammenfassung/", Sys.Date(), "_Statistiken_kombiniert.png"), height = 610, width = 450 + length(tracktics_files) * 72)
+  png(file = paste0(full_path, "/Zusammenfassung/", Sys.Date(), "_Statistiken_kombiniert.png"), height = 460, width = 450 + length(tracktics_files) * 72)
   gridExtra::grid.table(df_data_tt, rows = NULL)
   dev.off()
 }
