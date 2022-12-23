@@ -1,4 +1,4 @@
-summary_table <- function(pass,
+sporttotal_summary_table <- function(pass,
                           shots,
                           shots_opp,
                           pass_areas,
@@ -13,10 +13,12 @@ summary_table <- function(pass,
 
   #n_pass <- get_all_passes_completed(pass)
   n_pass <- nrow(pass)
+  n_pass_1half <- pass %>% dplyr::filter(Zeit < 500) %>% nrow()
+  n_pass_2half <- pass %>% dplyr::filter(Zeit > 500) %>% nrow()
   possession <- round((0.001336 * n_pass - 0.194287)*100,0)
   n_pass_in_sequence <- get_average_passes_in_sequence(pass = pass)
-  n_pass_more10 <- get_pass_sequences(pass_tot, n = 10) %>% ungroup() %>% dplyr::select(Zeit) %>% dplyr::distinct() %>% summarise(n())
-  n_pass_more20 <- get_pass_sequences(pass_tot, n = 20) %>% ungroup() %>% dplyr::select(Zeit) %>% dplyr::distinct() %>% summarise(n())
+  n_pass_more10 <- get_pass_sequences(pass, n = 10) %>% ungroup() %>% dplyr::select(Zeit) %>% dplyr::distinct() %>% summarise(n())
+  n_pass_more20 <- get_pass_sequences(pass, n = 20) %>% ungroup() %>% dplyr::select(Zeit) %>% dplyr::distinct() %>% summarise(n())
   n_pass_s5_spw50 <- nrow(pass_space_won_tot[pass_space_won_tot$space_won >= 50 & pass_space_won_tot$total < 5,])
   n_pass_l5_spw50 <- nrow(pass_space_won_tot[pass_space_won_tot$space_won >= 50 & pass_space_won_tot$total >= 5,])
   n_pass_l10_spw50 <- nrow(pass_space_won_tot[pass_space_won_tot$space_won >= 50 & pass_space_won_tot$total >= 10,])
@@ -39,7 +41,7 @@ summary_table <- function(pass,
                               )
   )
 
-  result <- c(n_pass, possession, n_pass_in_sequence, n_pass_more10, n_pass_more20,
+  result <- c(n_pass, n_pass_1half, n_pass_2half, possession, n_pass_in_sequence, n_pass_more10, n_pass_more20,
               n_pass_s5_spw50, n_pass_l5_spw50, n_pass_l10_spw50,
               n_pass_area_all, n_pass_area,
               n_shots, n_shots_inside_area, n_shots_outside_area,
@@ -47,7 +49,7 @@ summary_table <- function(pass,
               n_ballslost_1, n_ballslost_2, n_ballslost_3, n_ballswon_1, n_ballswon_2, n_ballswon_3,
               vec_n_pass, ecken, ecken_gegner)
 
-  myrownames <- c("Pässe", "Ballbesitz (in %)", "Durchschnitt Pässe in Passstafette", "Passstafetten mit mehr als 10 Pässen","Passstafetten mit mehr als 20 Pässen",
+  myrownames <- c("Pässe", "Pässe 1.HZ", "Pässe 2.HZ", "Ballbesitz (in %)", "Durchschnitt Pässe in Passstafette", "Passstafetten mit mehr als 10 Pässen","Passstafetten mit mehr als 20 Pässen",
                   "Passstafetten < 5 Pässe und >50m Raumgewinn", "Passstafetten >= 5 Pässe und >50m Raumgewinn", "Passstafetten >=10 Pässe und >50m Raumgewinn",
                   "Anteil angekommene Pässe ganzes Spielfeld",
                   "Anteil angekommene Pässe defensives Drittel", "Anteil angekommene Pässe mittleres Drittel", "Anteil angekommene Pässe offensives Drittel",
