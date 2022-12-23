@@ -88,8 +88,6 @@ if (plot_mannschaft) {
 if (einzelspieler_analyse) {
   player_names <- do.call("rbind", lapply(1:(length(tracktics_files)-1), function(x) tracktics_read_player_name(tracktics_files[length(tracktics_files) - x]))) %>% distinct()
 
-  #player_names <- tracktics_read_player_name(tracktics_files[length(tracktics_files) - 1])
-
   for (i in 1:nrow(player_names)) {
     first_name <- player_names$First.Name[i]
     last_name <- player_names$Last.Name[i]
@@ -118,7 +116,7 @@ if (einzelspieler_analyse) {
 
     if (plot_einzelspieler) {
       # Plot result
-      png(file = paste0(full_path, "/Einzelspieler/", Sys.Date(), "_", first_name, "_", last_name, ".png"), height = 540, width = 470 + (ncol(df_data_single_tt) - 3) * 75)
+      png(file = paste0(full_path, "/Einzelspieler/", Sys.Date(), "_", first_name, "_", last_name, ".png"), height = 470, width = 470 + (ncol(df_data_single_tt) - 3) * 75)
       table <- tableGrob(df_data_single_tt, rows = NULL)
       title <- textGrob(paste0(first_name, " ", last_name), gp = gpar(fontsize = 40))
       padding <- unit(1, "line")
@@ -159,7 +157,7 @@ if (einzelspieler_analyse) {
       df_players <- as.data.frame(player_list_df)
       df_players <- df_players %>% dplyr::mutate_if(is.list, as.character)
     
-      png(file = paste0(full_path, "/Positionen/", Sys.Date(), "_", j, ".png"), height = 530, width = 700)
+      png(file = paste0(full_path, "/Positionen/", Sys.Date(), "_", j, ".png"), height = 470, width = 700)
       table <- tableGrob(df_players, rows = NULL)
       title <- textGrob(paste0("Winter 22/23: Schnitt pro Spiel ", player_group_names[j]), gp = gpar(fontsize = 25))
       padding <- unit(1, "line")
