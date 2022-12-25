@@ -2,29 +2,24 @@
 # They are provided by a third-party and are governed by
 # separate terms of service, privacy policy, and support
 # documentation.
-#
-# See https://github.com/r-lib/actions/tree/master/examples#readme for
-# additional example workflows available for the R community.
+# lintr provides static code analysis for R.
+# It checks for adherence to a given style,
+# identifying syntax errors and possible semantic issues,
+# then reports them to you so you can take action.
+# More details at https://lintr.r-lib.org/
 
-name: R
+name: lintr
 
-#on:
-#  push:
+on: 
+   push:
 #    branches: [ "main" ]
 #  pull_request:
+#    # The branches below must be a subset of the branches above
 #    branches: [ "main" ]
 
 permissions:
   contents: read
 
-jobs:
-  build:
-    runs-on: macos-latest
-    strategy:
-      matrix:
-        r-version: ['3.6.3', '4.1.1']
-        
-        
 jobs:
   lintr:
     name: Run lintr scanning
