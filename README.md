@@ -6,6 +6,8 @@ basis for analysis and visualization of key parameters of the football match.
 
 ## Quick introduction
 
+This is a quick introduction
+
 ## Repo folder structure
 
 ## How to extract coordinates using GIMP
