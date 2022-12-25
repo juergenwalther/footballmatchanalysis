@@ -4,6 +4,11 @@ extracted coordinates of passes and shots from a video analysis of a football ma
 using the freely available GIMP software tool. Those coordinate files build the 
 basis for analysis and visualization of key parameters of the football match.
 
+<!-- badges: start -->
+[![R build status](https://github.com/juergenwalther/footballmatchanalysis/workflows/R-CMD-check/badge.svg)](https://github.com/juergenwalther/footballmatchanalysis/actions)
+<!-- badges: end -->
+
+
 ## Quick introduction
 
 This is a quick introduction
