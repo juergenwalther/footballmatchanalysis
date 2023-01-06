@@ -22,7 +22,7 @@ permissions:
 
 jobs:
   lintr:
-    name: Run lintr scanning
+    name: Run lintr and test coverage
     runs-on: ubuntu-latest
     permissions:
       contents: read # for checkout to fetch code
