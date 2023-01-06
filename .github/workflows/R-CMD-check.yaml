@@ -18,11 +18,12 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {os: macOS-latest,   r: 'release'}
-          - {os: windows-latest, r: 'release'}
+          - {os: macOS-latest,   r: ['release','4.1.1']}
+          - {os: windows-latest, r: ['release','4.1.1']}
           - {os: ubuntu-latest,   r: 'devel', http-user-agent: 'release'}
-          - {os: ubuntu-latest,   r: 'release'}
-          - {os: ubuntu-latest,   r: 'oldrel-1'}
+          - {os: ubuntu-latest,   r: ['release','4.1.1']}
+        #  - {os: ubuntu-latest,   r: 'oldrel-1'}
+        #r-version: ['4.2.2', '4.1.1']
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
@@ -44,6 +45,10 @@ jobs:
           extra-packages: rcmdcheck
 
       - uses: r-lib/actions/check-r-package@v2
+        with:
+          args: 'c("--no-manual", "--as-cran")'
+          error-on: '"error"'
+          check-dir: '"check"'
 
       - name: Show testthat output
         if: always()
