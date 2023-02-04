@@ -74,8 +74,13 @@ plot_balls_individual <- FALSE
 plot_all_matches <- FALSE
 
 
+<<<<<<< HEAD
 # Anzahl an Ecken vom Excel Sheet erhalten. Die Werte werden in summary_table() ausgegeben
 files_xlsx <- list.files(paste0(path, "/", spiel), pattern = "\\.xlsx$", full.names = TRUE)
+=======
+# Anzahl an Ecken vom Excel Sheet erhalten. Die Werte werden in video_summary_table() ausgegeben
+files_xlsx <- list.files(paste0(path,"/",spiel), pattern = "\\.xlsx$", full.names = TRUE)
+>>>>>>> 9615926... Calculate pass distance
 ecken_all <- get_corners(file = files_xlsx[length(files_xlsx)])
 ecken <- ecken_all[1]
 ecken_gegner <- ecken_all[2]
@@ -425,6 +430,7 @@ plot_shots(df = shots_opp_tot, title = "Schüsse des Gegners", subtitle = paste0
 
 ```{r summary statistics, warning=FALSE,message=FALSE, echo=FALSE}
 
+<<<<<<< HEAD
 summary_table <- sporttotal_summary_table(pass = pass_tot, shots = shots_tot, shots_opp = shots_opp_tot, pass_areas = pass_areas_tot, pass_space_won_tot = pass_space_won_tot, ecken = ecken, ecken_gegner = ecken_gegner)
 
 # Save spiel, spielrichtung_real and summary table as R object
@@ -440,6 +446,21 @@ save(spiel,
   summary_table,
   file = paste0(path, "/Statistik/", spiel, ".Rdata")
 )
+=======
+summary_table <- video_summary_table(pass = pass_tot, shots = shots_tot, shots_opp = shots_opp_tot, pass_areas = pass_areas_tot, pass_space_won_tot = pass_space_won_tot, ecken = ecken, ecken_gegner = ecken_gegner)
+
+# Save spiel, spielrichtung_real and summary table as R object
+save(spiel, 
+     spielrichtung_real, 
+     pass_tot,
+     shots_tot,
+     shots_opp_tot,
+     pass_areas_tot,
+     pass_space_won_tot,
+     ecken,
+     ecken_gegner,
+     video_summary_table, file = paste0(path, "/Statistik/", spiel, ".Rdata"))
+>>>>>>> 9615926... Calculate pass distance
 
 summary_table_single <- summary_table
 
