@@ -1,6 +1,8 @@
-#' Calculate distance of a pass
+#' Calculate distance of passes
 #'
-#' @return
+#' @param pass data.frame mit Passpositionen normiert auf das Spielfeld
+#'
+#' @return data.frame with additional column dis for distance of passes
 #' @export
 #'
 #' @examples
