@@ -1,4 +1,4 @@
-summary_table <- function(pass,
+video_summary_table <- function(pass,
                           shots,
                           shots_opp,
                           pass_areas,
