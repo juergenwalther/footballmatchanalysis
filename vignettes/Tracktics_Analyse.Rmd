@@ -16,6 +16,7 @@ library(dplyr)
 library(gridExtra)
 library(grid)
 library(gtable)
+library(stringr)
 devtools::load_all()
 ```
 
@@ -27,96 +28,162 @@ path <- "C://Users/Juergis/Documents/Fussball/Spielanalyse/Tracktics"
 season <- "Saison2223"
 full_path <- paste0(path, "/", season)
 
+plot_mannschaft <- TRUE
+einzelspieler_analyse <- FALSE
+plot_einzelspieler <- FALSE
+grouping <- TRUE
+plot_grouping <- TRUE
+
+player_group <- read.csv(paste0(path, "/Positionen2223.csv"), sep = ",")
+player_group_names <- colnames(player_group)
+player_list <- vector(mode = "list", length = length(player_group[1, ]))
 
 tracktics_files <- list.files(path = paste0(full_path), pattern = "*csv", full.names = TRUE)
 
 tracktics_manuell <- tracktics_read_manual_csv(file = paste0(full_path, "/Tracktics_manuell.csv"))
 
-data_tt <- do.call("cbind",lapply(1:(length(tracktics_files)-1), function(i) c(tracktics_read_team_stats(tracktics_files[i]), 
-                                                                    tracktics_manuell[i,2:dim(tracktics_manuell)[2]]
-                                                                    )
-                       )
-)
+data_tt <- do.call("cbind", lapply(1:(length(tracktics_files) - 1), function(i) {
+  c(
+    tracktics_read_team_stats(tracktics_files[i]),
+    tracktics_manuell[i, 2:dim(tracktics_manuell)[2]]
+  )
+}))
 
 spiele <- obtain_match_names(file_path = full_path)
 
-#spiele <- list.files(path = paste0(full_path), pattern = "*csv", full.names = FALSE)
-#spiele <- substring(spiele, 1, nchar(spiele)-4)
-#spiele <- spiele[-length(spiele)]
+# spiele <- list.files(path = paste0(full_path), pattern = "*csv", full.names = FALSE)
+# spiele <- substring(spiele, 1, nchar(spiele)-4)
+# spiele <- spiele[-length(spiele)]
 
 data_tt <- cbind(rownames(data_tt), data_tt)
-rownames(data_tt) = NULL
+rownames(data_tt) <- NULL
 
 # Ziele definieren
 targets <- tracktics_define_targets(data_tt)
-data_tt <- cbind(data_tt[,1], targets, data_tt[,2:dim(data_tt)[2]])
+data_tt <- cbind(data_tt[, 1], targets, data_tt[, 2:dim(data_tt)[2]])
 
 # Tabelle sortieren
-data_tt <- data_tt[c(1:9, 19:21, 10:16, 26:28, 17, 22:25),]
+data_tt <- data_tt[c(1:9, 19:21, 10:16, 26:28, 17, 22:25), ]
+
+# Tabelle filtern
+display_parameters <- c(
+  "Distanz Spiel (in km)", "Distanz 1.HZ (in km)", "Distanz 2.HZ (in km)", "Durschnittliche Distanz pro Spieler (in km)", "Durschnittliche Distanz pro Spieler 1.HZ (in km)", "Durschnittliche Distanz pro Spieler 2.HZ (in km)", "Anteil von HI an Gesamtdistanz (in %)",
+  "Anteil von HI an Gesamtdistanz 1.HZ (in %)", "Anteil von HI an Gesamtdistanz 2.HZ (in %)", "Anteil von Sprinten an Gesamtdistanz (in %)", "Anteil von Rennen an Gesamtdistanz (in %)", "Anteil Spiel im vorderen Drittel", "Anzahl Sprints", "Durchschnittliche Anzahl Sprints pro Spieler",
+  "Durchschnittliche Anzahl Sprints pro Spieler 1.HZ", "Durchschnittliche Anzahl Sprints pro Spieler 2.HZ",
+  "Anzahl progressiver Sprints", "Anzahl progressiver Sprints 1.HZ",
+  "Anzahl progressiver Sprints 2.HZ", "Anzahl Sprints in Spielrichtung"
+)
+
+data_tt <- data_tt[unlist(data_tt[,1]) %in% display_parameters,]
 
 red_match_names <- table_shorten_match_name(match_names = spiele)
 
 colnames(data_tt) <- c("Tracktics Parameter", "Ziel", red_match_names)
 
+if (plot_mannschaft) {
+  # Save table
+  xlsx::write.xlsx(x = data_tt, file = paste0(full_path, "/Zusammenfassung/", Sys.Date(), "_Statistiken_kombiniert.xlsx"), row.names = FALSE)
 
-# Save table
-xlsx::write.xlsx(x = data_tt, file = paste0(full_path, "/Zusammenfassung/", Sys.Date(), "_Statistiken_kombiniert.xlsx"), row.names = FALSE)
+  df_data_tt <- as.data.frame(data_tt)
+  df_data_tt <- df_data_tt %>% dplyr::mutate_if(is.list, as.character)
 
-df_data_tt <- as.data.frame(data_tt)
-df_data_tt <- df_data_tt %>% dplyr::mutate_if(is.list, as.character)
-
-# For every match add 100 in width
-png(file = paste0(full_path, "/Zusammenfassung/", Sys.Date(), "_Statistiken_kombiniert.png"), height = 610, width = 450 + length(tracktics_files) * 72)
-gridExtra::grid.table(df_data_tt, rows = NULL)
-dev.off()
+  # For every match add 100 in width
+  png(file = paste0(full_path, "/Zusammenfassung/", Sys.Date(), "_Statistiken_kombiniert.png"), height = 460, width = 450 + length(tracktics_files) * 72)
+  gridExtra::grid.table(df_data_tt, rows = NULL)
+  dev.off()
+}
 ```
 
 ```{r einzelspieler analyse}
 
-player_names <- tracktics_read_player_name(tracktics_files[length(tracktics_files)-1])
+if (einzelspieler_analyse) {
+  player_names <- do.call("rbind", lapply(1:(length(tracktics_files)-1), function(x) tracktics_read_player_name(tracktics_files[length(tracktics_files) - x]))) %>% distinct()
 
-for(i in 1:nrow(player_names)){
+  for (i in 1:nrow(player_names)) {
+    first_name <- player_names$First.Name[i]
+    last_name <- player_names$Last.Name[i]
 
-first_name <- player_names$First.Name[i]
-last_name <- player_names$Last.Name[i]
+    spiele <- obtain_match_names(file_path = full_path)
+    red_match_names <- table_shorten_match_name(match_names = spiele)
 
-spiele <- obtain_match_names(file_path = full_path)
-red_match_names <- table_shorten_match_name(match_names = spiele)
+    data_single <- do.call("cbind", lapply(1:(length(tracktics_files) - 1), function(i) tracktics_read_player_stats(file = tracktics_files[i], player_first_name = first_name, player_last_name = last_name, match_name = red_match_names[[i]])))
 
-data_single <- do.call("cbind", lapply(1:(length(tracktics_files) - 1), function(i) tracktics_read_player_stats(file = tracktics_files[i], player_first_name = first_name, player_last_name = last_name, match_name = red_match_names[[i]])))
+    # Transform to table
+    colnames(data_single) <- c(data_single[1, ])
+    data_single <- data_single[-1, ]
 
-# Transform to table
-colnames(data_single) <- c(data_single[1,])
-data_single <- data_single[-1,]
+    summ_stats <- tracktics_single_player_summary(data_single = data_single)
 
-summ_stats <- tracktics_single_player_summary(data_single = data_single)
-
-data_single_tt <- cbind(rownames(data_single), summ_stats, data_single)
-colnames(data_single_tt) <- c("Tracktics Paramter", "Summe", "Durchschnitt", colnames(data_single))
+    data_single_tt <- cbind(rownames(data_single), summ_stats, data_single)
+    colnames(data_single_tt) <- c("Tracktics Parameter", "Summe", "Durchschnitt", colnames(data_single))
 
 
-df_data_single_tt <- as.data.frame(data_single_tt)
-df_data_single_tt <- df_data_single_tt %>% dplyr::mutate_if(is.list, as.character)
+    df_data_single_tt <- as.data.frame(data_single_tt)
+    df_data_single_tt <- df_data_single_tt %>% dplyr::mutate_if(is.list, as.character)
 
-#Correct name for plotting
-first_name <- tracktics_correct_names(name = first_name)
-last_name <- tracktics_correct_names(name = last_name)
+    # Correct name for plotting
+    first_name <- tracktics_correct_names(name = first_name)
+    last_name <- tracktics_correct_names(name = last_name)
 
-# Plot result
-png(file = paste0(full_path, "/Einzelspieler/", first_name,"_",last_name, "_", Sys.Date(),".png"), height = 540, width = 470 + (ncol(df_data_single_tt)-3) * 75)
-table <- tableGrob(df_data_single_tt, rows = NULL)
-title <- textGrob(paste0(first_name, " ", last_name), gp = gpar(fontsize = 40))
-padding <- unit(1,"line")
-table <- gtable_add_rows(
-  table, heights = grobHeight(title) + padding, pos = 0
-)
-table <- gtable_add_grob(
-  table, list(title),
-  t = 1, l = 1, r = ncol(table)
-)
-grid.newpage()
-grid.draw(table)
-dev.off()
+    if (plot_einzelspieler) {
+      # Plot result
+      png(file = paste0(full_path, "/Einzelspieler/", Sys.Date(), "_", first_name, "_", last_name, ".png"), height = 470, width = 470 + (ncol(df_data_single_tt) - 3) * 75)
+      table <- tableGrob(df_data_single_tt, rows = NULL)
+      title <- textGrob(paste0(first_name, " ", last_name), gp = gpar(fontsize = 40))
+      padding <- unit(1, "line")
+      table <- gtable_add_rows(
+        table,
+        heights = grobHeight(title) + padding, pos = 0
+      )
+      table <- gtable_add_grob(
+        table, list(title),
+        t = 1, l = 1, r = ncol(table)
+      )
+      grid.newpage()
+      grid.draw(table)
+      dev.off()
+    }
+
+
+
+    if (grouping) {
+      for (player_position in 1:length(player_group[1, ])) {
+        if (last_name %in% player_group[, player_position]) {
+          player_list[[player_position]] <- cbind(
+            player_list[[player_position]],
+            data_single_tt[, which(colnames(data_single_tt) == "Durchschnitt")]
+          )
+          colnames(player_list[[player_position]])[length(player_list[[player_position]][1, ])] <- paste0(substr(first_name, 1, 1), ". ", last_name)
+        }
+      }
+    }
+  }
+  
+  
+  if(plot_grouping){
+  # Plot result
+    for(j in 1:length(player_list)){
+      player_list_df <- cbind(rownames(player_list[[j]]),player_list[[j]])
+      colnames(player_list_df) <- c("Tracktics Parameter", colnames(player_list[[j]]))
+      df_players <- as.data.frame(player_list_df)
+      df_players <- df_players %>% dplyr::mutate_if(is.list, as.character)
+    
+      png(file = paste0(full_path, "/Positionen/", Sys.Date(), "_", j, ".png"), height = 470, width = 700)
+      table <- tableGrob(df_players, rows = NULL)
+      title <- textGrob(paste0("Winter 22/23: Schnitt pro Spiel ", player_group_names[j]), gp = gpar(fontsize = 25))
+      padding <- unit(1, "line")
+      table <- gtable_add_rows(
+        table,
+        heights = grobHeight(title) + padding, pos = 0
+      )
+      table <- gtable_add_grob(
+        table, list(title),
+        t = 1, l = 1, r = ncol(table)
+      )
+      grid.newpage()
+      grid.draw(table)
+      dev.off()
+    }
+  }
 }
-
 ```

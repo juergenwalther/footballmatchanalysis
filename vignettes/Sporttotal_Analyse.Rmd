@@ -70,9 +70,12 @@ plot_raw_data <- FALSE
 plot_shots_individual <- FALSE
 plot_balls_individual <- FALSE
 
+# Plot all matches
+plot_all_matches <- FALSE
+
 
 # Anzahl an Ecken vom Excel Sheet erhalten. Die Werte werden in summary_table() ausgegeben
-files_xlsx <- list.files(paste0(path,"/",spiel), pattern = "\\.xlsx$", full.names = TRUE)
+files_xlsx <- list.files(paste0(path, "/", spiel), pattern = "\\.xlsx$", full.names = TRUE)
 ecken_all <- get_corners(file = files_xlsx[length(files_xlsx)])
 ecken <- ecken_all[1]
 ecken_gegner <- ecken_all[2]
@@ -205,19 +208,18 @@ pass_space_won <- lapply(pass, get_won_space_pass_sequence)
 for (i in 1:length(pass_space_won)) {
   plot_won_space(
     pass = pass_space_won[[i]],
-    subtitle = paste0("Halbzeit ",i),
+    subtitle = paste0("Halbzeit ", i),
     outpath = outfolder_pass,
     filename = paste0("Raumgewinn_vs_Anzahl_Paesse_", i)
   )
   plot_won_space(
     pass = pass_space_won[[i]],
     histogram = TRUE,
-    subtitle = paste0("Halbzeit ",i),
+    subtitle = paste0("Halbzeit ", i),
     outpath = outfolder_pass,
     filename = paste0("Histogramm_Raumgewinn_", i)
   )
 }
-
 ```
 
 
@@ -423,19 +425,21 @@ plot_shots(df = shots_opp_tot, title = "Schüsse des Gegners", subtitle = paste0
 
 ```{r summary statistics, warning=FALSE,message=FALSE, echo=FALSE}
 
-summary_table <- summary_table(pass = pass_tot, shots = shots_tot, shots_opp = shots_opp_tot, pass_areas = pass_areas_tot, pass_space_won_tot = pass_space_won_tot, ecken = ecken, ecken_gegner = ecken_gegner)
+summary_table <- sporttotal_summary_table(pass = pass_tot, shots = shots_tot, shots_opp = shots_opp_tot, pass_areas = pass_areas_tot, pass_space_won_tot = pass_space_won_tot, ecken = ecken, ecken_gegner = ecken_gegner)
 
 # Save spiel, spielrichtung_real and summary table as R object
-save(spiel, 
-     spielrichtung_real, 
-     pass_tot,
-     shots_tot,
-     shots_opp_tot,
-     pass_areas_tot,
-     pass_space_won_tot,
-     ecken,
-     ecken_gegner,
-     summary_table, file = paste0(path, "/Statistik/", spiel, ".Rdata"))
+save(spiel,
+  spielrichtung_real,
+  pass_tot,
+  shots_tot,
+  shots_opp_tot,
+  pass_areas_tot,
+  pass_space_won_tot,
+  ecken,
+  ecken_gegner,
+  summary_table,
+  file = paste0(path, "/Statistik/", spiel, ".Rdata")
+)
 
 summary_table_single <- summary_table
 
@@ -443,53 +447,51 @@ df_final <- as.data.frame(summary_table)
 df_final <- df_final %>% dplyr::mutate_if(is.list, as.character)
 ```
 
-# Zusammenfassung aller Spieler
+# Zusammenfassung aller Spiele
 
 ```{r combine summary statistics, warning=FALSE,message=FALSE, echo=FALSE}
 
-stat_files <- list.files(path = paste0(path, "/Statistik/"), pattern = "*Rdata", full.names = TRUE)
-
-load(stat_files[1])
-summary_load <- summary_table
-spiel_load <- spiel
-if (length(stat_files) > 1) {
-  for (i in 2:length(stat_files)) {
-    load(stat_files[i])
-    summary_load <- cbind(summary_load, summary_table[, 2])
-    spiel_load <- c(spiel_load, spiel)
-  }
-}
-
-red_match_names <- table_shorten_match_name(match_names = spiel_load)
-
-colnames(summary_load) <- c("Parameter", red_match_names)
-# Im Seligenporten-Spiel Saison2122 wurden keine Ecken gezählt
-#summary_load[c(nrow(summary_load) - 1, nrow(summary_load)), 2] <- c(NA, NA)
-
-df_summary_load <- as.data.frame(summary_load)
-df_summary_load <- df_summary_load %>% dplyr::mutate_if(is.list, as.character)
-```
-
-# Generieren des Outputs in Form von Excel Tabelle und Bilder der Zusammenfassung
-
-```{r generate output}
 
 # Einzelspielanalyse
 xlsx::write.xlsx(x = summary_table_single, file = paste0(outfolder, "/", spiel, "_Zusammenfassung_Statistiken.xlsx"), row.names = FALSE)
 
-png(file = paste0(outfolder, "/", spiel, "_Zusammenfassung_Statistiken.png"), height = 840, width = 400)
+png(file = paste0(outfolder, "/", spiel, "_Zusammenfassung_Statistiken.png"), height = 880, width = 400)
 gridExtra::grid.table(df_final, rows = NULL)
 dev.off()
 
 
+if (plot_all_matches) {
+  stat_files <- list.files(path = paste0(path, "/Statistik/"), pattern = "*Rdata", full.names = TRUE)
 
-# Zusammenfassung aller Spiele
-# Save table
-xlsx::write.xlsx(x = summary_load, file = paste0(path, "/Statistik/Zusammenfassung/", Sys.Date(), "_Statistiken_kombiniert.xlsx"), row.names = FALSE)
+  load(stat_files[1])
+  summary_load <- summary_table
+  spiel_load <- spiel
+  if (length(stat_files) > 1) {
+    for (i in 2:length(stat_files)) {
+      load(stat_files[i])
+      summary_load <- cbind(summary_load, summary_table[, 2])
+      spiel_load <- c(spiel_load, spiel)
+    }
+  }
 
-# For every match add 100 in width
-png(file = paste0(path, "/Statistik/Zusammenfassung/", Sys.Date(), "_Statistiken_kombiniert.png"), height = 840, width = 300 + length(stat_files) * 80)
-gridExtra::grid.table(df_summary_load, rows = NULL)
-dev.off()
+  red_match_names <- table_shorten_match_name(match_names = spiel_load)
+
+  colnames(summary_load) <- c("Parameter", red_match_names)
+  # Im Seligenporten-Spiel Saison2122 wurden keine Ecken gezählt
+  # summary_load[c(nrow(summary_load) - 1, nrow(summary_load)), 2] <- c(NA, NA)
+
+  df_summary_load <- as.data.frame(summary_load)
+  df_summary_load <- df_summary_load %>% dplyr::mutate_if(is.list, as.character)
+
+  # Generieren des Outputs in Form von Excel Tabelle und Bilder der Zusammenfassung
+
+  # Zusammenfassung aller Spiele
+  # Save table
+  xlsx::write.xlsx(x = summary_load, file = paste0(path, "/Statistik/Zusammenfassung/", Sys.Date(), "_Statistiken_kombiniert.xlsx"), row.names = FALSE)
+
+  # For every match add 100 in width
+  png(file = paste0(path, "/Statistik/Zusammenfassung/", Sys.Date(), "_Statistiken_kombiniert.png"), height = 880, width = 300 + length(stat_files) * 80)
+  gridExtra::grid.table(df_summary_load, rows = NULL)
+  dev.off()
+}
 ```
-

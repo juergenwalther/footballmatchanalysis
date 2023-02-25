@@ -27,7 +27,7 @@ tracktics_single_player_summary <- function(data_single) {
     ret <- cbind(rep(NA, length(data_single)),rep(NA, length(data_single)))
   } else {
     sums <- apply(data_single, 1, sum_numeric)
-    sums[c(2,9,10,11,18:22)] <- NA
+    sums[c(2,6:8,15:19)] <- NA
     ret <- cbind(sums, apply(data_single, 1, mean_numeric))
   }
   return(ret)
