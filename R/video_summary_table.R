@@ -1,3 +1,20 @@
+#' Summary table of video analysis
+#'
+#' @param pass data.frame with to meter normalized passes
+#' @param shots data.frame with position of shots
+#' @param shots_opp data.frame with position of shots of opponent
+#' @param pass_areas data.fram with passes in areas
+#' @param pass_space_won_tot data.frame with total won space of passes
+#' @param ecken integer number of corners of WFV
+#' @param ecken_gegner integer number of corners of opponent
+#' @param own_area integer to define border of own area
+#' @param own_half integer to define border of own half
+#' @param opponent_area integer to define border of opponent area
+#'
+#' @return data.frame with summary statistics
+#' @export
+#'
+#' @examples
 video_summary_table <- function(pass,
                           shots,
                           shots_opp,
@@ -10,7 +27,7 @@ video_summary_table <- function(pass,
                           opponent_area = 105-16) {
   df_balls_lost <- balls_lost(pass)
   df_balls_won <- balls_won(pass)
-
+  df_pass_dist <- get_pass_distance(pass = pass)
   #n_pass <- get_all_passes_completed(pass)
   n_pass <- nrow(pass)
   possession <- round((0.001336 * n_pass - 0.194287)*100,0)
