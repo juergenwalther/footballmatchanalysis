@@ -1,6 +1,26 @@
+<<<<<<< HEAD
 <<<<<<< HEAD:R/sporttotal_summary_table.R
 sporttotal_summary_table <- function(pass,
 =======
+=======
+#' Summary table of video analysis
+#'
+#' @param pass data.frame with to meter normalized passes
+#' @param shots data.frame with position of shots
+#' @param shots_opp data.frame with position of shots of opponent
+#' @param pass_areas data.fram with passes in areas
+#' @param pass_space_won_tot data.frame with total won space of passes
+#' @param ecken integer number of corners of WFV
+#' @param ecken_gegner integer number of corners of opponent
+#' @param own_area integer to define border of own area
+#' @param own_half integer to define border of own half
+#' @param opponent_area integer to define border of opponent area
+#'
+#' @return data.frame with summary statistics
+#' @export
+#'
+#' @examples
+>>>>>>> 30c107d... Obtain pass distance
 video_summary_table <- function(pass,
 >>>>>>> 9615926... Calculate pass distance:R/video_summary_table.R
                           shots,
@@ -14,7 +34,7 @@ video_summary_table <- function(pass,
                           opponent_area = 105-16) {
   df_balls_lost <- balls_lost(pass)
   df_balls_won <- balls_won(pass)
-
+  df_pass_dist <- get_pass_distance(pass = pass)
   #n_pass <- get_all_passes_completed(pass)
   n_pass <- nrow(pass)
   # Pässe in einer Halbzeit
