@@ -433,7 +433,7 @@ plot_shots(df = shots_opp_tot, title = "Schüsse des Gegners", subtitle = paste0
 summary_table <- video_summary_table(pass = pass_tot, shots = shots_tot, shots_opp = shots_opp_tot, pass_areas = pass_areas_tot, pass_space_won_tot = pass_space_won_tot, ecken = ecken, ecken_gegner = ecken_gegner)
 
 # Save spiel, spielrichtung_real and summary table as R object
-save(spiel, 
+video_save_match_data(spiel, 
      spielrichtung_real, 
      pass_tot,
      shots_tot,
@@ -442,7 +442,8 @@ save(spiel,
      pass_space_won_tot,
      ecken,
      ecken_gegner,
-     summary_table, file = paste0(path, "/Statistik/", spiel, ".Rdata"))
+     summary_table,
+     filepath = paste0(path, "/Statistik/", spiel, ".Rdata"))
 
 summary_table_single <- summary_table
 
@@ -493,7 +494,7 @@ if (plot_all_matches) {
   xlsx::write.xlsx(x = summary_load, file = paste0(path, "/Statistik/Zusammenfassung/", Sys.Date(), "_Statistiken_kombiniert.xlsx"), row.names = FALSE)
 
   # For every match add 100 in width
-  png(file = paste0(path, "/Statistik/Zusammenfassung/", Sys.Date(), "_Statistiken_kombiniert.png"), height = 880, width = 300 + length(stat_files) * 80)
+  png(file = paste0(path, "/Statistik/Zusammenfassung/", Sys.Date(), "_Statistiken_kombiniert.png"), height = 1000, width = 300 + length(stat_files) * 80)
   gridExtra::grid.table(df_summary_load, rows = NULL)
   dev.off()
 }

@@ -14,6 +14,7 @@ library(xlsx)
 library(dplyr)
 library(gridExtra)
 library(grid)
+devtools::load_all()
 ```
 
 
@@ -27,27 +28,55 @@ path <- paste0(parent_path, "/", season)
 
 stat_files <- list.files(path = paste0(path, "/Statistik/"), pattern = "*Rdata", full.names = TRUE)
 
-load(stat_files[1])
-st_load <- summary_table
-spiel_load <- spiel
-for (i in 2:length(stat_files)) {
+# Redo summary statistics for all matches
+for (i in 1:length(stat_files)) {
   load(stat_files[i])
-  st_load <- cbind(st_load, summary_table[, 2])
-  spiel_load <- c(spiel_load, spiel)
+  summary_table <- video_summary_table(pass = pass_tot, shots = shots_tot, shots_opp = shots_opp_tot, pass_areas = pass_areas_tot, pass_space_won_tot = pass_space_won_tot, ecken = ecken, ecken_gegner = ecken_gegner)
+
+  video_save_match_data(spiel,
+    spielrichtung_real,
+    pass_tot,
+    shots_tot,
+    shots_opp_tot,
+    pass_areas_tot,
+    pass_space_won_tot,
+    ecken,
+    ecken_gegner,
+    summary_table,
+    filepath = stat_files[i]
+  )
 }
 
+
+  load(stat_files[1])
+  summary_load <- summary_table
+  spiel_load <- spiel
+  if (length(stat_files) > 1) {
+    for (i in 2:length(stat_files)) {
+      load(stat_files[i])
+      summary_load <- cbind(summary_load, summary_table[, 2])
+      spiel_load <- c(spiel_load, spiel)
+    }
+  }
+
 colnames(st_load) <- c("Parameter", spiel_load)
-# Im Seligenporten-Spiel wurden keine Ecken gezählt
-st_load[c(nrow(st_load) - 1, nrow(st_load)), 2] <- c(NA, NA)
 
+
+red_match_names <- table_shorten_match_name(match_names = spiel_load)
+
+colnames(summary_load) <- c("Parameter", red_match_names)
+
+df_summary_load <- as.data.frame(summary_load)
+df_summary_load <- df_summary_load %>% dplyr::mutate_if(is.list, as.character)
+
+# Generieren des Outputs in Form von Excel Tabelle und Bilder der Zusammenfassung
+
+# Zusammenfassung aller Spiele
 # Save table
-xlsx::write.xlsx(x = st_load, file = paste0(path, "/Statistik/Zusammenfassung/", Sys.Date(), "_Statistiken_kombiniert.xlsx"), row.names = FALSE)
-
-df_st_load <- as.data.frame(st_load)
-df_st_load <- df_st_load %>% dplyr::mutate_if(is.list, as.character)
+xlsx::write.xlsx(x = summary_load, file = paste0(path, "/Statistik/Zusammenfassung/", Sys.Date(), "_Statistiken_kombiniert.xlsx"), row.names = FALSE)
 
 # For every match add 100 in width
-png(file = paste0(path, "/Statistik/Zusammenfassung/", Sys.Date(), "_Statistiken_kombiniert.png"), height = 750, width = 700 + length(stat_files) * 110)
-gridExtra::grid.table(df_st_load, rows = NULL)
+png(file = paste0(path, "/Statistik/Zusammenfassung/", Sys.Date(), "_Statistiken_kombiniert.png"), height = 1000, width = 300 + length(stat_files) * 80)
+gridExtra::grid.table(df_summary_load, rows = NULL)
 dev.off()
 ```
