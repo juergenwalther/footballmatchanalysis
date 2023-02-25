@@ -1,17 +1,3 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD:R/sporttotal_summary_table.R
-sporttotal_summary_table <- function(pass,
-=======
-=======
-<<<<<<< HEAD:R/sporttotal_summary_table.R
-<<<<<<< HEAD:R/sporttotal_summary_table.R
-sporttotal_summary_table <- function(pass,
-=======
-video_summary_table <- function(pass,
->>>>>>> 9615926... Calculate pass distance:R/video_summary_table.R
->>>>>>> 30c107d1fe8547026adf2b0f1623a9a3e3fb74ea
-=======
 #' Summary table of video analysis
 #'
 #' @param pass data.frame with to meter normalized passes
@@ -29,14 +15,7 @@ video_summary_table <- function(pass,
 #' @export
 #'
 #' @examples
-<<<<<<< HEAD
->>>>>>> 30c107d... Obtain pass distance
 video_summary_table <- function(pass,
->>>>>>> 9615926... Calculate pass distance:R/video_summary_table.R
-=======
-video_summary_table <- function(pass,
->>>>>>> 30c107d1fe8547026adf2b0f1623a9a3e3fb74ea:R/video_summary_table.R
->>>>>>> 30c107d1fe8547026adf2b0f1623a9a3e3fb74ea
                           shots,
                           shots_opp,
                           pass_areas,
@@ -46,6 +25,7 @@ video_summary_table <- function(pass,
                           own_area = 22,
                           own_half = 52.5,
                           opponent_area = 105-16) {
+
   df_balls_lost <- balls_lost(pass)
   df_balls_won <- balls_won(pass)
   df_pass_dist <- get_pass_distance(pass = pass)
@@ -55,6 +35,16 @@ video_summary_table <- function(pass,
   n_pass_1half <- pass %>% dplyr::filter(Zeit < 500) %>% nrow()
   n_pass_2half <- pass %>% dplyr::filter(Zeit > 500) %>% nrow()
   possession <- round((0.001336 * n_pass - 0.194287)*100,0)
+  # Anzahl angekommener Pässe nach Passdistanz
+  n_pass_dist_less10 <- df_pass_dist %>% dplyr::filter(dis <= 10) %>% nrow()
+  n_pass_dist_10to20 <- df_pass_dist %>% dplyr::filter(dis > 10, dis <= 20) %>% nrow()
+  n_pass_dist_more20 <- df_pass_dist %>% dplyr::filter(dis > 20) %>% nrow()
+  n_pass_dist_less10_1st_half <- df_pass_dist %>% dplyr::filter(Zeit < 500, dis <= 10) %>% nrow()
+  n_pass_dist_10to20_1st_half <- df_pass_dist %>% dplyr::filter(Zeit < 500, dis > 10, dis <= 20) %>% nrow()
+  n_pass_dist_more20_1st_half <- df_pass_dist %>% dplyr::filter(Zeit < 500, dis > 20) %>% nrow()
+  n_pass_dist_less10_2nd_half <- df_pass_dist %>% dplyr::filter(Zeit > 500, dis <= 10) %>% nrow()
+  n_pass_dist_10to20_2nd_half <- df_pass_dist %>% dplyr::filter(Zeit > 500, dis > 10, dis <= 20) %>% nrow()
+  n_pass_dist_more20_2nd_half <- df_pass_dist %>% dplyr::filter(Zeit > 500, dis > 20) %>% nrow()
   # Pässe pro Passstafette
   n_pass_in_sequence <- get_average_passes_in_sequence(pass = pass)
   # Passstafetten mit mehr als x Pässen
@@ -87,6 +77,9 @@ video_summary_table <- function(pass,
 
   result <- c(n_pass, n_pass_1half, n_pass_2half, possession, n_pass_in_sequence,
               n_pass_s5_spw50, n_pass_l5_spw50, n_pass_l10_spw50,
+              n_pass_dist_less10, n_pass_dist_less10_1st_half, n_pass_dist_less10_2nd_half,
+              n_pass_dist_10to20, n_pass_dist_10to20_1st_half, n_pass_dist_10to20_2nd_half,
+              n_pass_dist_more20, n_pass_dist_more20_1st_half, n_pass_dist_more20_2nd_half,
               n_pass_area_all, n_pass_area,
               n_shots, n_shots_inside_area, n_shots_outside_area,
               n_shots_opp, n_shots_opp_inside_area, n_shots_opp_outside_area,
@@ -95,6 +88,9 @@ video_summary_table <- function(pass,
 
   myrownames <- c("Pässe", "Pässe 1.HZ", "Pässe 2.HZ", "Ballbesitz (in %)", "Durchschnitt Pässe in Passstafette",
                   "Passstafetten < 5 Pässe und >50m Raumgewinn", "Passstafetten >= 5 Pässe und >50m Raumgewinn", "Passstafetten >=10 Pässe und >50m Raumgewinn",
+                  "Anzahl Pässe Distanz <10m", "Anzahl Pässe Distanz <10m 1.HZ", "Anzahl Pässe Distanz <10m 2.HZ",
+                  "Anzahl Pässe Distanz 10-20m", "Anzahl Pässe Distanz 10-20m 1.HZ", "Anzahl Pässe Distanz 10-20m 2.HZ",
+                  "Anzahl Pässe Distanz >20m", "Anzahl Pässe Distanz >20m 1.HZ", "Anzahl Pässe Distanz >20m 2.HZ",
                   "Anteil angekommene Pässe ganzes Spielfeld",
                   "Anteil angekommene Pässe defensives Drittel", "Anteil angekommene Pässe mittleres Drittel", "Anteil angekommene Pässe offensives Drittel",
                  "Schüsse", "Schüsse innerhalb des Strafraums", "Schüsse außerhalb des Strafraums",
