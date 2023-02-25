@@ -2,9 +2,7 @@
 #'
 #' @param pass data.frame with pass sequences
 #'
-#' @return data.frame with columns area (integer of area where ball was won),
-#' space_won (amount of space won compared to total pitch length),
-#' total (number of passes in pass sequence)
+#' @return numeric value with average number of passes in pass sequence
 #' @export
 #'
 #' @examples
