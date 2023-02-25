@@ -1,7 +1,16 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 <<<<<<< HEAD:R/sporttotal_summary_table.R
 sporttotal_summary_table <- function(pass,
 =======
+=======
+<<<<<<< HEAD:R/sporttotal_summary_table.R
+<<<<<<< HEAD:R/sporttotal_summary_table.R
+sporttotal_summary_table <- function(pass,
+=======
+video_summary_table <- function(pass,
+>>>>>>> 9615926... Calculate pass distance:R/video_summary_table.R
+>>>>>>> 30c107d1fe8547026adf2b0f1623a9a3e3fb74ea
 =======
 #' Summary table of video analysis
 #'
@@ -20,9 +29,14 @@ sporttotal_summary_table <- function(pass,
 #' @export
 #'
 #' @examples
+<<<<<<< HEAD
 >>>>>>> 30c107d... Obtain pass distance
 video_summary_table <- function(pass,
 >>>>>>> 9615926... Calculate pass distance:R/video_summary_table.R
+=======
+video_summary_table <- function(pass,
+>>>>>>> 30c107d1fe8547026adf2b0f1623a9a3e3fb74ea:R/video_summary_table.R
+>>>>>>> 30c107d1fe8547026adf2b0f1623a9a3e3fb74ea
                           shots,
                           shots_opp,
                           pass_areas,
