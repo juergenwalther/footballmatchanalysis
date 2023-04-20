@@ -63,18 +63,18 @@ targets <- tracktics_define_targets(data_tt)
 data_tt <- cbind(data_tt[, 1], targets, data_tt[, 2:dim(data_tt)[2]])
 
 # Tabelle sortieren
-data_tt <- data_tt[c(1:9, 19:21, 10:16, 26:28, 17, 22:25), ]
+data_tt <- data_tt[c(1:9, 18,19, 10:16, 21, 20), ]
 
 # Tabelle filtern
-display_parameters <- c(
-  "Distanz Spiel (in km)", "Distanz 1.HZ (in km)", "Distanz 2.HZ (in km)", "Durschnittliche Distanz pro Spieler (in km)", "Durschnittliche Distanz pro Spieler 1.HZ (in km)", "Durschnittliche Distanz pro Spieler 2.HZ (in km)", "Anteil von HI an Gesamtdistanz (in %)",
-  "Anteil von HI an Gesamtdistanz 1.HZ (in %)", "Anteil von HI an Gesamtdistanz 2.HZ (in %)", "Anteil von Sprinten an Gesamtdistanz (in %)", "Anteil von Rennen an Gesamtdistanz (in %)", "Anteil Spiel im vorderen Drittel", "Anzahl Sprints", "Durchschnittliche Anzahl Sprints pro Spieler",
-  "Durchschnittliche Anzahl Sprints pro Spieler 1.HZ", "Durchschnittliche Anzahl Sprints pro Spieler 2.HZ",
-  "Anzahl progressiver Sprints", "Anzahl progressiver Sprints 1.HZ",
-  "Anzahl progressiver Sprints 2.HZ", "Anzahl Sprints in Spielrichtung"
-)
+#display_parameters <- c(
+#  "Distanz Spiel (in km)", "Distanz 1.HZ (in km)", "Distanz 2.HZ (in km)", "Durschnittliche Distanz pro Spieler (in km)", "Durschnittliche Distanz pro Spieler 1.HZ (in km)", #"Durschnittliche Distanz pro Spieler 2.HZ (in km)", "Anteil von HI an Gesamtdistanz (in %)",
+#  "Anteil von HI an Gesamtdistanz 1.HZ (in %)", "Anteil von HI an Gesamtdistanz 2.HZ (in %)", "Anteil von Sprinten an Gesamtdistanz (in %)", "Anteil von Rennen an #Gesamtdistanz (in %)", "Anteil Spiel im vorderen Drittel", "Anzahl Sprints", "Durchschnittliche Anzahl Sprints pro Spieler",
+#  "Durchschnittliche Anzahl Sprints pro Spieler 1.HZ", "Durchschnittliche Anzahl Sprints pro Spieler 2.HZ",
+#  "Anzahl progressiver Sprints", "Anzahl progressiver Sprints 1.HZ",
+#  "Anzahl progressiver Sprints 2.HZ", "Anzahl Sprints in Spielrichtung"
+#)
 
-data_tt <- data_tt[unlist(data_tt[,1]) %in% display_parameters,]
+#data_tt <- data_tt[unlist(data_tt[,1]) %in% display_parameters,]
 
 red_match_names <- table_shorten_match_name(match_names = spiele)
 
