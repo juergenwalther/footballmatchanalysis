@@ -39,7 +39,7 @@ devtools::load_all()
 
 ```{r}
 # Folder name of match analysis
-spiel <- "20221112_WFV-Erlangen"
+spiel <- "20230726_WFV-Abtswind"
 
 # Spielrichtung im realen Spiel
 spielrichtung_real <- c(rep("r", 3), rep("l", 3)) # Die Spielrichtung in der Analyse ist immer von links nach rechts, also "r". Bei anderer Spielrichtung wird das Feld gespiegelt.
@@ -51,7 +51,7 @@ spielrichtung_real <- c(rep("r", 3), rep("l", 3)) # Die Spielrichtung in der Ana
 ```{r load data, warning=FALSE,message=FALSE, echo=FALSE}
 
 parent_path <- "C://Users/Juergis/Documents/Fussball/Spielanalyse/Programm/Videoanalyse/WFV"
-season <- "Saison2223"
+season <- "Saison2324"
 path <- paste0(parent_path, "/", season)
 
 

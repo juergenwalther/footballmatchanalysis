@@ -25,11 +25,11 @@ devtools::load_all()
 ```{r combine summary statistics, warning=FALSE,message=FALSE, echo=FALSE}
 
 path <- "C://Users/Juergis/Documents/Fussball/Spielanalyse/Tracktics"
-season <- "Saison2223"
+season <- "Saison2324"
 full_path <- paste0(path, "/", season)
 
 plot_mannschaft <- TRUE
-einzelspieler_analyse <- FALSE
+einzelspieler_analyse <- TRUE
 plot_einzelspieler <- FALSE
 grouping <- TRUE
 plot_grouping <- TRUE
@@ -170,7 +170,7 @@ if (einzelspieler_analyse) {
     
       png(file = paste0(full_path, "/Positionen/", Sys.Date(), "_", j, ".png"), height = 470, width = 700)
       table <- tableGrob(df_players, rows = NULL)
-      title <- textGrob(paste0("Winter 22/23: Schnitt pro Spiel ", player_group_names[j]), gp = gpar(fontsize = 25))
+      title <- textGrob(paste0("Sommer 23: Schnitt pro Spiel ", player_group_names[j]), gp = gpar(fontsize = 25))
       padding <- unit(1, "line")
       table <- gtable_add_rows(
         table,
