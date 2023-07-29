@@ -29,10 +29,10 @@ season <- "Saison2324"
 full_path <- paste0(path, "/", season)
 
 plot_mannschaft <- TRUE
-einzelspieler_analyse <- TRUE
+einzelspieler_analyse <- FALSE
 plot_einzelspieler <- FALSE
-grouping <- TRUE
-plot_grouping <- TRUE
+grouping <- FALSE
+plot_grouping <- FALSE
 
 player_group <- read.csv(paste0(path, "/Positionen2223.csv"), sep = ",")
 player_group_names <- colnames(player_group)
