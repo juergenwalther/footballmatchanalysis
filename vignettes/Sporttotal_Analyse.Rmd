@@ -39,7 +39,7 @@ devtools::load_all()
 
 ```{r}
 # Folder name of match analysis
-spiel <- "20230726_WFV-Abtswind"
+spiel <- "20230804_WFV-Donaustauf"
 
 # Spielrichtung im realen Spiel
 spielrichtung_real <- c(rep("r", 3), rep("l", 3)) # Die Spielrichtung in der Analyse ist immer von links nach rechts, also "r". Bei anderer Spielrichtung wird das Feld gespiegelt.
@@ -71,7 +71,7 @@ plot_shots_individual <- FALSE
 plot_balls_individual <- FALSE
 
 # Plot all matches
-plot_all_matches <- FALSE
+plot_all_matches <- TRUE
 
 # Anzahl an Ecken vom Excel Sheet erhalten. Die Werte werden in summary_table() ausgegeben
 files_xlsx <- list.files(paste0(path, "/", spiel), pattern = "\\.xlsx$", full.names = TRUE)
