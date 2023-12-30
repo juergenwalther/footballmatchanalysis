@@ -28,13 +28,18 @@ path <- "C://Users/Juergis/Documents/Fussball/Spielanalyse/Tracktics"
 season <- "Saison2324"
 full_path <- paste0(path, "/", season)
 
+# Plot whole team and comparison between matches
 plot_mannschaft <- TRUE
-einzelspieler_analyse <- FALSE
-plot_einzelspieler <- FALSE
-grouping <- FALSE
-plot_grouping <- FALSE
+# Perform analysis of each individual player
+einzelspieler_analyse <- TRUE
+# Plot analysis of each individual player
+plot_einzelspieler <- TRUE
+# Perform analysis of position groups (csv file for the season needs to be up-to-date)
+grouping <- TRUE
+# Plot analysis of position groups (csv file for the season needs to be up-to-date)
+plot_grouping <- TRUE
 
-player_group <- read.csv(paste0(path, "/Positionen2223.csv"), sep = ",")
+player_group <- read.csv(paste0(path, "/Positionen2324.csv"), sep = ",")
 player_group_names <- colnames(player_group)
 player_list <- vector(mode = "list", length = length(player_group[1, ]))
 
@@ -97,7 +102,7 @@ if (plot_mannschaft) {
 ```{r einzelspieler analyse}
 
 if (einzelspieler_analyse) {
-  player_names <- do.call("rbind", lapply(1:(length(tracktics_files)-1), function(x) tracktics_read_player_name(tracktics_files[length(tracktics_files) - x]))) %>% distinct()
+  player_names <- do.call("rbind", lapply(1:(length(tracktics_files) - 1), function(x) tracktics_read_player_name(tracktics_files[length(tracktics_files) - x]))) %>% distinct()
 
   for (i in 1:nrow(player_names)) {
     first_name <- player_names$First.Name[i]
@@ -148,7 +153,9 @@ if (einzelspieler_analyse) {
 
     if (grouping) {
       for (player_position in 1:length(player_group[1, ])) {
-        if (last_name %in% player_group[, player_position]) {
+        if (any(grepl(last_name, player_group[, player_position])) &&
+          any(grepl(paste(substr(first_name, 1, 1), ".", sep = ""), player_group[, player_position]))
+        ) {
           player_list[[player_position]] <- cbind(
             player_list[[player_position]],
             data_single_tt[, which(colnames(data_single_tt) == "Durchschnitt")]
@@ -158,19 +165,19 @@ if (einzelspieler_analyse) {
       }
     }
   }
-  
-  
-  if(plot_grouping){
-  # Plot result
-    for(j in 1:length(player_list)){
-      player_list_df <- cbind(rownames(player_list[[j]]),player_list[[j]])
+
+
+  if (plot_grouping) {
+    # Plot result
+    for (j in 1:length(player_list)) {
+      player_list_df <- cbind(rownames(player_list[[j]]), player_list[[j]])
       colnames(player_list_df) <- c("Tracktics Parameter", colnames(player_list[[j]]))
       df_players <- as.data.frame(player_list_df)
       df_players <- df_players %>% dplyr::mutate_if(is.list, as.character)
-    
-      png(file = paste0(full_path, "/Positionen/", Sys.Date(), "_", j, ".png"), height = 470, width = 700)
+
+      png(file = paste0(full_path, "/Positionen/", Sys.Date(), "_", j, ".png"), height = 470, width = 800)
       table <- tableGrob(df_players, rows = NULL)
-      title <- textGrob(paste0("Sommer 23: Schnitt pro Spiel ", player_group_names[j]), gp = gpar(fontsize = 25))
+      title <- textGrob(paste0("Winter 23/24: Schnitt pro Spiel ", player_group_names[j]), gp = gpar(fontsize = 25))
       padding <- unit(1, "line")
       table <- gtable_add_rows(
         table,

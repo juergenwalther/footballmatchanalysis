@@ -7,8 +7,8 @@
 #'
 #' @examples
 tracktics_correct_names <- function(name) {
-  check_pattern <- list(c("sler", "Dr"), "nschke", "Ku", "ffer")
-  correct_names <- list("Drösler", "Hänschke", "Kuß", "Schäffer")
+  check_pattern <- list(c("sler", "Dr"), "nschke", "Ku", "ffer", "thlein", "ndling")
+  correct_names <- list("Drösler", "Hänschke", "Kuß", "Schäffer", "Röthlein", "Gündling")
 
   ret <- name
 
